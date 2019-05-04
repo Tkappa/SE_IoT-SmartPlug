@@ -1,1 +1,4 @@
-IoTServer/node_modules
+IoTServer/node_modules/
+IoTServer/package.json
+IoTServer/package-lock.json
+App/SmartPlug/app/build/
