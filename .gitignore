@@ -2,3 +2,16 @@ IoTServer/node_modules/
 IoTServer/package.json
 IoTServer/package-lock.json
 App/SmartPlug/app/build/
+*.iml
+.gradle
+App/SmartPlug/local.properties
+App/SmartPlug/.idea/caches
+App/SmartPlug/.idea/libraries
+App/SmartPlug/.idea/modules.xml
+App/SmartPlug/.idea/workspace.xml
+App/SmartPlug/.idea/navEditor.xml
+App/SmartPlug/.idea/assetWizardSettings.xml
+App/SmartPlug/.DS_Store
+App/SmartPlug/build
+App/SmartPlug/captures
+App/SmartPlug/.externalNativeBuild
