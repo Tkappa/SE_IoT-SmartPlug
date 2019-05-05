@@ -13,10 +13,12 @@ public:
 
   bool getBTBtnRequest();
   bool getBTReady();
+  bool getBTOn();
   LEDMODE getBTLedCommand();
 
   void setBTBtnRequest(bool in);
   void setBTReady(bool in);
+  void setBTOn(bool in);
   void setBTLedCommand(LEDMODE in);
 
   // C++ 11
@@ -33,6 +35,7 @@ private:
 
   bool BTBtnRequest;
   bool BTReady;
+  bool BTOn;
   LEDMODE BTLedCommand;
 };
 

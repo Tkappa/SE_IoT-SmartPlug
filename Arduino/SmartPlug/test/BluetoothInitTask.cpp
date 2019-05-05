@@ -10,7 +10,7 @@ void BluetoothInit::init(int basePeriod){
 
   Task::init(basePeriod);
   begin(baudRate);
-  state=checkBtn;
+  state=BTI_checkBtn;
   pinMode(vccPin, OUTPUT);
   pinMode(atPin, OUTPUT);
   digitalWrite(vccPin,LOW);
@@ -18,40 +18,54 @@ void BluetoothInit::init(int basePeriod){
 }
 void BluetoothInit::tick(){
   switch (state) {
-    case checkBtn:
+    case BTI_checkBtn:
       //If the button was pressed and the BT device isn't ready yet it means that it needs to initialize
       if(!Flags::getInstance()->getBTReady()&&Flags::getInstance()->getBTBtnRequest()){
-        state=powerOn;
+        state=BTI_powerOn;
       }
     break;
-    case powerOn:
+    case BTI_powerOn:
       //Turns on the device
       digitalWrite(vccPin,HIGH);
-      state=enterAtMode;
+      state=BTI_enterAtMode;
     break;
-    case enterAtMode:
+    case BTI_enterAtMode:
       //Sets it to AT MODE so it can recieve status messagess
       digitalWrite(atPin,HIGH);
+      btChannel->listen();
       btChannel->println("AT+STATE?");
       currToFind = new WordFinder("PAIRABLE");
-      state=waitForPairable;
+      state=BTI_waitForPairable;
     break;
-    case waitForPairable:
+    case BTI_waitForPairable:
       //Will wait until the device is in the PAIRABLE status
-      //TODO: limited amout of tries before turning the device off? 
+      //TODO: limited amout of tries before turning the device off?
       while(btChannel->available()){
         if(currToFind->search(btChannel->read())){
-          state=setReady;
+          state=BTI_setReady;
           btChannel->flush();
         }
       }
     break;
-    case setReady:
+    case BTI_setReady:
       //Tells the other parts of the device that the BT device is ready
       Flags::getInstance()->setBTReady(true);
-      //Sets the BT led to signal that the BT device is ready for pairing
-      Flags::getInstance()->setBTLedCommand(flashing);
+      //Returns the task to the first position where it will be stuck until the BT device is off again
+      state= BTI_waitBtFinish;
+    break;
+    case BTI_waitBtFinish:
+      if(!Flags::getInstance()->getBTOn()){
+        Flags::getInstance()->setBTReady(false);
+        Flags::getInstance()->setBTBtnRequest(false);
+        state = BTI_turnOff;
+      }
+    break;
+    case BTI_turnOff:
+    
+      Flags::getInstance()->setBTLedCommand(off);
+      digitalWrite(vccPin,LOW);
+      digitalWrite(atPin,LOW);
+      state= BTI_checkBtn;
     break;
   }
 }
-

@@ -7,7 +7,7 @@
 #include "DeviceFlags.h"
 #include "WordFinder.h"
 
-enum BtInitStates{checkBtn,powerOn,enterAtMode,waitForPairable,setReady};
+enum BtInitStates{BTI_checkBtn,BTI_powerOn,BTI_enterAtMode,BTI_waitForPairable,BTI_setReady,BTI_waitBtFinish,BTI_turnOff};
 
 class BluetoothInit: public BluetoothTask{
 

@@ -23,6 +23,9 @@ bool Flags::getBTBtnRequest(){
 bool Flags::getBTReady(){
   return BTReady;
 }
+bool Flags::getBTOn(){
+  return BTOn;
+}
 LEDMODE Flags::getBTLedCommand(){
   return BTLedCommand;
 }
@@ -32,6 +35,8 @@ void Flags::setBTBtnRequest(bool in){
 }
 void Flags::setBTReady(bool in){
   BTReady=in;
+}void Flags::setBTOn(bool in){
+  BTOn=in;
 }
 void Flags::setBTLedCommand(LEDMODE in){
   BTLedCommand=in;
