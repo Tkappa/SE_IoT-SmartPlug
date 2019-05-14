@@ -7,7 +7,7 @@
 class WordFinder{
 
 public:
-  WordFinder(String toFind){
+  WordFinder(char *  toFind){
     wordToFind=toFind;
     currAt=0;
   }
@@ -30,7 +30,7 @@ public:
   }
 
 private:
-  String wordToFind;
+  char * wordToFind;
   int currAt;
 };
 

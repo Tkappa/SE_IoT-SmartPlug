@@ -17,6 +17,7 @@ void BluetoothInit::init(int basePeriod){
   digitalWrite(atPin,LOW);
 }
 void BluetoothInit::tick(){
+  //const char * stateString =(const char*)F("AT+STATE?");
   switch (state) {
     case BTI_checkBtn:
       //If the button was pressed and the BT device isn't ready yet it means that it needs to initialize
@@ -33,8 +34,8 @@ void BluetoothInit::tick(){
       //Sets it to AT MODE so it can recieve status messagess
       digitalWrite(atPin,HIGH);
       btChannel->listen();
-      btChannel->println("AT+STATE?");
-      currToFind = new WordFinder("PAIRABLE");
+      btChannel->println((const char*)F("AT+STATE?"));
+      currToFind = new WordFinder((char*)F("PAIRABLE"));
       state=BTI_waitForPairable;
     break;
     case BTI_waitForPairable:
@@ -61,7 +62,7 @@ void BluetoothInit::tick(){
       }
     break;
     case BTI_turnOff:
-    
+
       Flags::getInstance()->setBTLedCommand(off);
       digitalWrite(vccPin,LOW);
       digitalWrite(atPin,LOW);

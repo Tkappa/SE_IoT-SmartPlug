@@ -6,12 +6,12 @@ BluetoothRoutine::BluetoothRoutine(int tx,int rx,int state,long baud): Bluetooth
   statePin=state;
   ticksAlone=0;
   parser= new CommandParser();
-  parser->addCommand("WS=<ssid>;<pswd>;-");
-  parser->addCommand("DSW=<wattage>;-");
-  parser->addCommand("DSR=<routine>;-");
-  parser->addCommand("MM=<onoff>;-");
-  parser->addCommand("MF=<fastmode>;-");
-  parser->addCommand("SS=<serverip>;<serverport>;<DevID>;<DevKey>;-");
+  parser->addCommand((const char*)F("WS=<ssid>;<pswd>;-"));
+  parser->addCommand((const char*)F("DSW=<wattage>;-"));
+  parser->addCommand((const char*)F("DSR=<routine>;-"));
+  parser->addCommand((const char*)F("MM=<onoff>;-"));
+  parser->addCommand((const char*)F("MF=<fastmode>;-"));
+  parser->addCommand((const char*)F("SS=<serverip>;<serverport>;<DevID>;<DevKey>;-"));
 }
 
 
@@ -46,7 +46,7 @@ void BluetoothRoutine::tick(){
         if(++ticksAlone>=MAXTRIES){
           state=BTR_turnOff;
         }
-        
+
       }
     break;
     case BTR_handleMessages:

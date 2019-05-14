@@ -26,7 +26,7 @@ protected:
   BtRoutineStates state;
   int statePin;
   int ticksAlone;
-  
+
 private:
   WordFinder * currToFind;
   CommandParser * parser;

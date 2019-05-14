@@ -3,27 +3,41 @@
 
 #include "Arduino.h"
 
-#define ROUTINELEN 288 //every 5 minutes
+#define ROUTINELEN 144 //every 10 minutes
 
 class Settings{
 public:
 
   static Settings * getInstance();
 
-  String getServerIp();
-  String getServerPort();
-  bool getRoutinePos(int pos);
+  char* getServerIp();
+  char* getServerPort();
   float getMaxWattage();
-  int getSecretKey();
-  int getID();
+  char* getSecretKey();
+  char* getID();
+  char* getWifiPassword();
+  char* getWifiSSID();
 
-  void setServerIp(String ip);
-  void setServerPort(String port);
+  void setWifiSSID(char* ssid);
+  void setWifiPassword(char* psw);
+  void setServerIp(char* ip);
+  void setServerPort(char* port);
   void setRoutine(bool inroutine[ROUTINELEN]);
   void setMaxWattage(int wattage);
-  void setSecretKey(int key);
-  void setID(int inid);
+  void setSecretKey(char* key);
+  void setID(char* inid);
 
+  bool getRoutinePos(const unsigned int index) {
+     if (index > ROUTINELEN)
+        return false;
+     return (bool) bitRead(routine[index/8], index%8);
+  }
+
+  void setRoutineAt(const unsigned int index, const boolean value) {
+     if (index > ROUTINELEN)
+        return;
+     bitWrite(routine[index/8], index%8, value);
+  }
 
   // C++ 11
   // =======
@@ -36,12 +50,14 @@ public:
 private:
   Settings();
   static Settings * instance;
-  String serverip;
-  String serverport;
-  bool routine[ROUTINELEN];
+  char serverip[30];
+  char serverport[10];
+  unsigned char routine[(ROUTINELEN/8)+1];
   float maxWattage;
-  int secretKey;
-  int ID;
+  char secretKey[10];
+  char ID[5];
+  char wifiSSID[100];
+  char wifiPassword[20];
 
 
 };

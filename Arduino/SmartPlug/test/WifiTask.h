@@ -1,15 +1,16 @@
-#ifndef __BTTASK__
-#define __BTTASK__
+#ifndef __WIFITASK__
+#define __WIFITASK__
 
 
 #include "Arduino.h"
+#include "WifiDevice.h"
 #include "SoftwareSerial.h"
 #include "Task.h"
 
-class BluetoothTask: public Task{
+class WifiTask: public Task{
 
 public:
-  BluetoothTask(int tx,int rx);
+  WifiTask(int tx,int rx,WifiDevice* inputDevice);
 
   void begin(long baudRate);
   int available();
@@ -20,7 +21,8 @@ public:
 
 protected:
 
-  SoftwareSerial * btChannel;
+  WifiDevice * currentDevice;
+  SoftwareSerial * wifiChannel;
   int rxPin;
   int txPin;
   long baudRate;

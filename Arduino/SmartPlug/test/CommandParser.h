@@ -5,7 +5,7 @@
 
 #include "Arduino.h"
 
-enum ParseMode{search,params,checkend};
+enum ParseMode{PM_search,PM_params,PM_checkend};
 
 class CommandParser{
   private:
@@ -35,7 +35,7 @@ public:
       parameters[i]= String("");
       currentPositions[i]=0;
     }
-    currentMode=search;
+    currentMode=PM_search;
     nParams=0;
     commandFound=-1;
     currentParam=0;
@@ -44,7 +44,7 @@ public:
   String getParam(int n){
     return parameters[n];
   }
-  
+
   bool addCommand(String param){
     if (nCommands<NUMBERSTOPARSE){
       commandsToParse[nCommands]=param;
@@ -59,7 +59,7 @@ public:
 
   int parse(char c){
     switch(currentMode){
-      case search:
+      case PM_search:
         for(int i=0;i<nCommands;i++){
           //Serial.print(commandsToParse[i][currentPositions[i]]);
           //Serial.print("=");
@@ -68,7 +68,7 @@ public:
             if(c=='='){
               commandFound=i;
               currentParam=0;
-              currentMode=params;
+              currentMode=PM_params;
               Serial.print("Command found - ");
               Serial.println(commandsToParse[commandFound]);
             }
@@ -81,7 +81,7 @@ public:
           }
         }
       break;
-      case params:
+      case PM_params:
         if(c!=';'){
           parameters[currentParam].concat(c);
         }
@@ -91,16 +91,16 @@ public:
           Serial.print(" found - ");
           Serial.println(parameters[currentParam]);
           currentParam++;
-          currentMode=checkend;
+          currentMode=PM_checkend;
         }
       break;
-      case checkend:
+      case PM_checkend:
         if(c=='-'){
           Serial.println("Finished parsing");
           return commandFound;
         }
         else{
-          currentMode=params;
+          currentMode=PM_params;
           parse(c);
         }
       break;

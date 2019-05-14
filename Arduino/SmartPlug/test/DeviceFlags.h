@@ -21,6 +21,10 @@ public:
   void setBTOn(bool in);
   void setBTLedCommand(LEDMODE in);
 
+
+  void setWFhasSettings(bool in);
+  bool getWFhasSettings();
+
   // C++ 11
   // =======
   // Don't forget to declare these two. You want to make sure they
@@ -37,6 +41,8 @@ private:
   bool BTReady;
   bool BTOn;
   LEDMODE BTLedCommand;
+
+  bool WFhasSettings;
 };
 
 #endif

@@ -41,3 +41,11 @@ void Flags::setBTReady(bool in){
 void Flags::setBTLedCommand(LEDMODE in){
   BTLedCommand=in;
 }
+
+
+void Flags::setWFhasSettings(bool in){
+  WFhasSettings=in;
+}
+bool Flags::getWFhasSettings(){
+  return WFhasSettings;
+}
