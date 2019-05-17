@@ -2,6 +2,7 @@
 
 
 BluetoothRoutine::BluetoothRoutine(BluetoothDevice * inCurrDevice){
+  currDevice=inCurrDevice;
   ticksAlone=0;
 }
 

@@ -86,7 +86,9 @@ void BTHC05::resetFSM(){
 
 
 bool BTHC05::isPaired(){
-  if(digitalRead(statePin)==HIGH){
+  int statusStatePin= digitalRead(statePin);
+  Serial.print(statusStatePin);
+  if(statusStatePin==HIGH){
     return true;
   }
   return false;
@@ -95,6 +97,7 @@ bool BTHC05::isPaired(){
 bool BTHC05::handleMessages(){
   while(btChannel->available()){
     char c= btChannel->read();
+    Serial.print(c);
     if(parser->parse(c)!=-1){
       Serial.print(F("Found!"));
       parser->reset();
