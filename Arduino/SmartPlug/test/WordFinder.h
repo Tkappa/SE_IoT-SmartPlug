@@ -11,19 +11,19 @@ public:
   WordFinder(){ }
 
   void setWord(char *  toFind){
-    Serial.print("AAAA:");
-    Serial.println(toFind);
     wordToFind=toFind;
     currAt=0;
-    Serial.print("SetWord:");
-    Serial.println(wordToFind);
+    #ifdef DEBUG
+      Serial.print("Word to find:");
+      Serial.println(wordToFind);
+    #endif
   }
 
   bool search(char c){
     #ifdef DEBUG
-    Serial.print(c);
-    Serial.print("=");
-    Serial.println(wordToFind[currAt]);
+      Serial.print(c);
+      Serial.print("=");
+      Serial.println(wordToFind[currAt]);
     #endif
     if(c==wordToFind[currAt]){;
       currAt++;

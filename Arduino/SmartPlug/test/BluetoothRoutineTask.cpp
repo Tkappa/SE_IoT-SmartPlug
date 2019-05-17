@@ -25,7 +25,6 @@ void BluetoothRoutine::tick(){
       }
     break;
     case BTR_waitPair:
-      Serial.println("hauhau");
       if(currDevice->isPaired()){
         Flags::getInstance()->setBTLedCommand(on);
         state=BTR_handleMessages;

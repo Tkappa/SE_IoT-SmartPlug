@@ -1,6 +1,3 @@
-#define DEBUG
-
-
 #include "Timer.h"
 #include "DeviceSettings.h"
 #include "BluetoothInitTask.h"
@@ -11,6 +8,8 @@
 #include "BTHC05.h"
 
 #include "DeviceFlags.h"
+
+#define DEBUG
 
 #define BTTX 2 //La porta TX che esce dal device BT
 #define BTRX 3 //La porta RX che esce dal device BT
@@ -27,9 +26,8 @@ int lastmillis=0;
 bool pressedLastTick=false;
 int ledState=LOW;
 BTHC05 * btDev=new BTHC05(BTTX,BTRX,BTVCC,BTATMODE,BTSTATUS);
-//SoftwareSerial * caccamerda= new SoftwareSerial(BTTX,BTRX);
 BluetoothInit btInitRout(btDev);
-BluetoothRoutine rout(btDev);
+BluetoothRoutine btMsgRoutine(btDev);
 //WifiESP8266 * wifiDev = new WifiESP8266();
 //WifiRoutine wifiRout(WFTX,WFRX,wifiDev,4800);
 
@@ -41,23 +39,23 @@ Timer timer;
 void setup(){
 timer.setupPeriod(basePeriod);
  Serial.begin(9600);
- 
+ while (!Serial) {};
 //btDev->btChannel= new SoftwareSerial(BTTX,BTRX);
  btDev->begin(9600);
  //btDev->btChannel= new SoftwareSerial(BTTX,BTRX);
  //btDev->btChannel->begin(9600);
  //caccamerda->begin(9600);
  //println("helomyfrine");
- 
- //while (!Serial) {};
- 
+
+
+
  btInitRout.init(1000);
- rout.init(1000);
+ btMsgRoutine.init(1000);
  //wifiRout.init(1500);
  pinMode(BTBUTTON, INPUT);
  pinMode(BTLED,OUTPUT);
  Flags::getInstance()->setWFhasSettings(true);
- Settings::getInstance();//->setWifiSSID("Almawifi per poveri");
+ Settings::getInstance()->setWifiSSID("Almawifi per poveri");
  Settings::getInstance()->setWifiPassword("SanVitale45");
  Serial.println(freeRam());
 
@@ -71,26 +69,20 @@ void loop(){
 
   if(btInitRout.updateAndCheckTime(basePeriod)){
     btInitRout.tick();
-    
-  Serial.println(freeRam());
+
   }
-  /*while(Serial.available()){
-    btDev->write(Serial.read());
-   // caccamerda->write(Serial.read());
-  }
-  while(btDev->available()){
-  //while(caccamerda->available()){  
-    //Serial.write(caccamerda->read());
-    Serial.write(btDev->read());
-  }*/
-  if(rout.updateAndCheckTime(basePeriod)){
-    rout.tick();
+  if(btMsgRoutine.updateAndCheckTime(basePeriod)){
+    btMsgRoutine.tick();
+    #ifdef DEBUG
+      Serial.print(F("Ram remaining: "));
+      Serial.println(freeRam());
+    #endif
   }
   //if(wifiRout.updateAndCheckTime(basePeriod)){
   //  Serial.print("hmm");
     //wifiRout.tick();
   //}
-  
+
 
   int state = digitalRead(BTBUTTON);
   if (state==HIGH){
@@ -123,12 +115,9 @@ void loop(){
     digitalWrite(BTLED,LOW);
     ledState=LOW;
   }
-  //while(test.available()){
-  //  Serial.write(test.read());
-  //}
 }
 int freeRam () {
-  extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
