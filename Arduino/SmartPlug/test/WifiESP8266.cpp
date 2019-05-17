@@ -21,6 +21,7 @@
     parser->addCommand("MM=<onoff>;-");
     parser->addCommand("MF=<fastmode>;-");
     parser->addCommand("SS=<serverip>;<serverport>;<DevID>;<DevKey>;-");
+    currToFind= new WordFinder();
   }
 
   bool WifiESP8266::setup(){
@@ -49,7 +50,7 @@
       case ESP_checkconn:
         wifiChannel->listen();
         wifiChannel->println("AT+CWJAP?");
-        currToFind = new WordFinder(wifiSSID);
+        currToFind->setWord(wifiSSID);
         while(wifiChannel->available()){
           char c = wifiChannel->read();
           Serial.print(c);

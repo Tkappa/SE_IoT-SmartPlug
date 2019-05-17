@@ -4,18 +4,19 @@
 #define MAXTRIES 30
 
 #include "Arduino.h"
-#include "BluetoothTask.h"
 #include "DeviceFlags.h"
 #include "CommandParser.h"
+#include "BluetoothDevice.h"
+#include "Task.h"
 #include "WordFinder.h"
 
 enum BtRoutineStates{BTR_waitReady,BTR_waitPair,BTR_handleMessages,BTR_turnOff};
 
-class BluetoothRoutine: public BluetoothTask{
+class BluetoothRoutine: public Task{
 
 
 public:
-  BluetoothRoutine(int tx,int rx,int state,long baud);
+  BluetoothRoutine(BluetoothDevice * inCurrDevice);
 
 
   void init(int basePeriod);
@@ -23,13 +24,9 @@ public:
 
 protected:
 
+  BluetoothDevice * currDevice;
   BtRoutineStates state;
-  int statePin;
   int ticksAlone;
-
-private:
-  WordFinder * currToFind;
-  CommandParser * parser;
 };
 
 #endif

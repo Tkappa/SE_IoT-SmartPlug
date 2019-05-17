@@ -1,16 +1,24 @@
 #ifndef __WORDFINDER__
 #define __WORDFINDER__
 
+#define DEBUG
 
 #include "Arduino.h"
 
 class WordFinder{
 
 public:
-  WordFinder(char *  toFind){
+  WordFinder(){ }
+
+  void setWord(char *  toFind){
+    Serial.print("AAAA:");
+    Serial.println(toFind);
     wordToFind=toFind;
     currAt=0;
+    Serial.print("SetWord:");
+    Serial.println(wordToFind);
   }
+
   bool search(char c){
     #ifdef DEBUG
     Serial.print(c);

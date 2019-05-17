@@ -9,9 +9,9 @@ enum ParseMode{PM_search,PM_params,PM_checkend};
 
 class CommandParser{
   private:
-  String commandsToParse[NUMBERSTOPARSE];
+  char* commandsToParse[NUMBERSTOPARSE];
   int currentPositions[NUMBERSTOPARSE];
-  String parameters[NUMBERSTOPARSE];
+  char* parameters[NUMBERSTOPARSE];
 
   ParseMode currentMode;
 
@@ -24,7 +24,7 @@ class CommandParser{
 public:
   CommandParser(){
     for(int i =0; i<NUMBERSTOPARSE;i++){
-      commandsToParse[i]= String("");
+      strcpy(commandsToParse[i],"");
     }
     nCommands=0;
     reset();
@@ -32,7 +32,7 @@ public:
 
   void reset(){
     for(int i =0; i<NUMBERSTOPARSE;i++){
-      parameters[i]= String("");
+      strcpy(parameters[i],"");
       currentPositions[i]=0;
     }
     currentMode=PM_search;
@@ -45,7 +45,7 @@ public:
     return parameters[n];
   }
 
-  bool addCommand(String param){
+  bool addCommand(char* param){
     if (nCommands<NUMBERSTOPARSE){
       commandsToParse[nCommands]=param;
       currentPositions[nCommands]=0;
@@ -69,7 +69,7 @@ public:
               commandFound=i;
               currentParam=0;
               currentMode=PM_params;
-              Serial.print("Command found - ");
+              Serial.print(F("Command found - "));
               Serial.println(commandsToParse[commandFound]);
             }
             else{
@@ -83,12 +83,13 @@ public:
       break;
       case PM_params:
         if(c!=';'){
-          parameters[currentParam].concat(c);
+          strcat(parameters[currentParam],&c);
+          //parameters[currentParam].concat(c);
         }
         else{
-          Serial.print("Param ");
+          Serial.print(F("Param "));
           Serial.print(currentParam);
-          Serial.print(" found - ");
+          Serial.print(F(" found - "));
           Serial.println(parameters[currentParam]);
           currentParam++;
           currentMode=PM_checkend;
@@ -96,7 +97,7 @@ public:
       break;
       case PM_checkend:
         if(c=='-'){
-          Serial.println("Finished parsing");
+          Serial.println(F("Finished parsing"));
           return commandFound;
         }
         else{
