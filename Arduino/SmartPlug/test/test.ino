@@ -17,19 +17,21 @@
 #define BTATMODE 5
 #define BTBUTTON 6
 #define BTSTATUS 7
-#define WFRX 8
-#define WFTX 9
+#define WFRX 8 //La porta Rx che esce dal device WIFI
+#define WFTX 9 //La porta Tx che esce dal device WIFI
 
 #define BTLED 11
 
 int lastmillis=0;
 bool pressedLastTick=false;
 int ledState=LOW;
-BTHC05 * btDev=new BTHC05(BTTX,BTRX,BTVCC,BTATMODE,BTSTATUS);
+
+BTHC05 * btDev=new BTHC05(BTRX,BTTX,BTVCC,BTATMODE,BTSTATUS);
+WifiESP8266 * wifiDev = new WifiESP8266(WFRX,WFTX);
+
 BluetoothInit btInitRout(btDev);
 BluetoothRoutine btMsgRoutine(btDev);
-//WifiESP8266 * wifiDev = new WifiESP8266();
-//WifiRoutine wifiRout(WFTX,WFRX,wifiDev,4800);
+WifiRoutine wifiRout(wifiDev);
 
 
 const byte basePeriod=50;
@@ -40,18 +42,13 @@ void setup(){
 timer.setupPeriod(basePeriod);
  Serial.begin(9600);
  while (!Serial) {};
-//btDev->btChannel= new SoftwareSerial(BTTX,BTRX);
+
  btDev->begin(9600);
- //btDev->btChannel= new SoftwareSerial(BTTX,BTRX);
- //btDev->btChannel->begin(9600);
- //caccamerda->begin(9600);
- //println("helomyfrine");
-
-
+ wifiDev->begin(4800);
 
  btInitRout.init(1000);
  btMsgRoutine.init(1000);
- //wifiRout.init(1500);
+ wifiRout.init(1500);
  pinMode(BTBUTTON, INPUT);
  pinMode(BTLED,OUTPUT);
  Flags::getInstance()->setWFhasSettings(true);
@@ -73,15 +70,16 @@ void loop(){
   }
   if(btMsgRoutine.updateAndCheckTime(basePeriod)){
     btMsgRoutine.tick();
+    
+  }
+  if(wifiRout.updateAndCheckTime(basePeriod)){
+    //Serial.print("hmm");
+    wifiRout.tick();
     #ifdef DEBUG
       Serial.print(F("Ram remaining: "));
       Serial.println(freeRam());
     #endif
   }
-  //if(wifiRout.updateAndCheckTime(basePeriod)){
-  //  Serial.print("hmm");
-    //wifiRout.tick();
-  //}
 
 
   int state = digitalRead(BTBUTTON);

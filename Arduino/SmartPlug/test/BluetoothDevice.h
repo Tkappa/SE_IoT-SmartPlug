@@ -8,12 +8,6 @@ class BluetoothDevice{
 
 public:
 
-  /*BluetoothDevice(int tx,int rx){
-      txPin=tx;
-      rxPin=rx;
-      btChannel= new SoftwareSerial(tx, rx);
-  }*/
-
   virtual bool powerOn();
   virtual bool setup();
   virtual bool powerOff();
@@ -25,10 +19,10 @@ public:
 
 
 
-  //virtual void begin(long baud){
-  //  btChannel->begin(baud);
-  //  baudRate=baud;
-  //}a
+  void begin(long baud){
+    btChannel->begin(baud);
+    baudRate=baud;
+  }
 
   void write(uint8_t input){
     btChannel->write(input);

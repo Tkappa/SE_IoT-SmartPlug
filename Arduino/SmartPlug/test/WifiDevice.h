@@ -6,8 +6,9 @@
 
 class WifiDevice{
 public:
-virtual bool setup();
-virtual void setSerial(SoftwareSerial * inwifiChannel);
+  
+//It's int because it needs to return an error status
+virtual int setup();
 virtual bool checkConnection();
 virtual bool disconnect();
 virtual bool connect();
@@ -16,9 +17,28 @@ virtual bool postData();
 virtual bool getCommands();
 virtual bool pingBack();
 
+void begin(long baud){
+  wifiChannel->begin(baud);
+  baudRate=baud;
+}
+
+void write(uint8_t input){
+  wifiChannel->write(input);
+}
+
+int read(){
+  return wifiChannel->read();
+}
+
+int available(){
+  return wifiChannel->available();
+}
+
 protected:
   SoftwareSerial * wifiChannel;
-
+  int rxPin;
+  int txPin;
+  long baudRate;
 };
 
 #endif

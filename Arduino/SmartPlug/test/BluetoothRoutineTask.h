@@ -5,10 +5,8 @@
 
 #include "Arduino.h"
 #include "DeviceFlags.h"
-#include "CommandParser.h"
-#include "BluetoothDevice.h"
 #include "Task.h"
-#include "WordFinder.h"
+#include "BluetoothDevice.h"
 
 enum BtRoutineStates{BTR_waitReady,BTR_waitPair,BTR_handleMessages,BTR_turnOff};
 

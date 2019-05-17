@@ -9,7 +9,6 @@
 #define DEBUG
 
 #include "Arduino.h"
-#include <avr/pgmspace.h>
 
 enum ParseMode{PM_search,PM_params,PM_checkend};
 

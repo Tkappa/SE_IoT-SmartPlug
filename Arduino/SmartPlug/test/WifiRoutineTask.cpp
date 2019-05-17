@@ -1,33 +1,42 @@
 #include "WifiRoutineTask.h"
 
 
-WifiRoutine::WifiRoutine(int tx,int rx,WifiDevice * inputDevice,long baud): WifiTask(tx,rx,inputDevice){
-  baudRate=baud;
+WifiRoutine::WifiRoutine(WifiDevice * inputDevice){
+  currentDevice=inputDevice;
+  errorTollerance=0;
 }
 
 
 void WifiRoutine::init(int basePeriod){
   Task::init(basePeriod);
-  begin(baudRate);
   state=WFR_hasSettings;
-  currentDevice->setSerial(wifiChannel);
 }
 
 void WifiRoutine::tick(){
-  Serial.print(state);
+  int statusMsg;
   switch (state) {
     case WFR_hasSettings:
       if(Flags::getInstance()->getWFhasSettings()){
+        errorTollerance=0;
         state=WFR_setup;
       }
     break;
     case WFR_setup:
-      if(currentDevice->setup()){
+      statusMsg=currentDevice->setup();
+      if(statusMsg==1){
         state=WFR_postData;
+      }
+      else if(statusMsg==-1){
+        Serial.println(F("Error!:("));
+        if(errorTollerance++>=3){
+          Flags::getInstance()->setWFhasSettings(false);
+          Serial.println(F("Basta ora mi sono annoiato"));
+          state=WFR_hasSettings;
+        }
       }
     break;
     case WFR_postData:
-      Serial.println("Qui si sta bene");
+      Serial.println(F("Qui si sta bene"));
       if(currentDevice->postData()){
         state=WFR_getCommand;
       }

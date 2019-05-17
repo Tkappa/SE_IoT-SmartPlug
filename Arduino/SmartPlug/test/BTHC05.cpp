@@ -6,7 +6,7 @@ BTHC05::BTHC05(int tx,int rx,int invccPin,int inatPin,int inStatePin)/*:Bluetoot
 
   txPin=tx;
   rxPin=rx;
-  btChannel= new SoftwareSerial(txPin, rxPin);
+  btChannel= new SoftwareSerial(rxPin,txPin);
   vccPin=invccPin;
   atPin=inatPin;
   statePin=inStatePin;
@@ -96,11 +96,7 @@ bool BTHC05::handleMessages(){
 
 
 void BTHC05::begin(long baud){
-  //BluetoothDevice::begin(baud);
-
-  btChannel->begin(baud);
-  baudRate=baud;
-  btChannel->listen();
+  BluetoothDevice::begin(baud);
   digitalWrite(vccPin,LOW);
   digitalWrite(atPin,LOW);
 }

@@ -8,15 +8,14 @@
 #include "WordFinder.h"
 #include "CommandParser.h"
 
-enum ESPsetup {ESP_getSettings,ESP_checkconn,ESP_disconnect,ESP_connect,ESP_skipTick};
+enum ESPsetup {ESP_getSettings,ESP_checkconn,ESP_disconnect,ESP_connect,ESP_skipTick,ESP_readResponse};
 
 class WifiESP8266 : public WifiDevice{
 
 public:
-  WifiESP8266();
+  WifiESP8266(int tx,int rx);
 
-  void setSerial(SoftwareSerial * inwifiChannel);
-  bool setup();
+  int setup();
   bool checkConnection();
   bool disconnect();
   bool connect();
@@ -29,17 +28,16 @@ private:
   ESPsetup setupStatus;
 
   char serverip[30];
-  char serverport[10];
-  char secretKey[10];
-  char ID[5];
-  char wifiSSID[100];
+  char serverport[4];
+  char secretKey[5];
+  char ID[2];
+  char wifiSSID[20];
   char wifiPassword[20];
 
-//  SoftwareSerial * wifiChannel;
 
-    WordFinder * currToFind;
-    CommandParser * parser;
-
+  WordFinder * currToFind;
+  CommandParser * parser;
+  int setupBusyWaiting;
 };
 
 #endif

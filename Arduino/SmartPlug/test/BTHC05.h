@@ -6,7 +6,7 @@
 #include "WordFinder.h"
 #include "CommandParser.h"
 #include "BluetoothDevice.h"
-#include <avr/pgmspace.h>
+
 enum HCSetup {BTHCSS_enterAtMode,BTHCSS_waitForPairable};
 
 class BTHC05 : public BluetoothDevice{
