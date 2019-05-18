@@ -37,7 +37,7 @@ void WifiRoutine::tick(){
     break;
     case WFR_postData:
       Serial.println(F("Qui si sta bene"));
-      if(currentDevice->postData()){
+      if(currentDevice->postData()==1){
         state=WFR_getCommand;
       }
     break;

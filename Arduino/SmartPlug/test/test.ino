@@ -54,9 +54,12 @@ timer.setupPeriod(basePeriod);
  Flags::getInstance()->setWFhasSettings(true);
  Settings::getInstance()->setWifiSSID("Almawifi per poveri");
  Settings::getInstance()->setWifiPassword("SanVitale45");
+ Settings::getInstance()->setServerIp("192.168.1.63");
+ Settings::getInstance()->setServerPort("8000");
+ Flags::getInstance()->setValueRead(123.456);
+ Settings::getInstance()->setSecretKey("1234");
+ Settings::getInstance()->setID("01");
  Serial.println(freeRam());
-
-
 
 }
 void loop(){

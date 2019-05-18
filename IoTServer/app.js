@@ -32,10 +32,16 @@ app.post('/postc',function(req,res){
 	res.redirect("/");
 });
 
-app.post('/hi',function(req,res){
-	var color=req.body.value;
-	console.log(req.body);
-	console.log(color);
+app.post('/recv',function(req,res){
+	var values=req.body.values;
+	var id=req.body.id;
+	var key=req.body.key;
+
+	console.log(id);
+	console.log(key);
+	var helo=values.split(",");
+	console.log(helo);
+	console.log("Hehe :^)"+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds());
 	res.sendStatus(200);
 });
 

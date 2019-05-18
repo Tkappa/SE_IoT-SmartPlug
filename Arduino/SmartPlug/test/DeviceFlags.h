@@ -25,6 +25,9 @@ public:
   void setWFhasSettings(bool in);
   bool getWFhasSettings();
 
+  void setValueRead(float in);
+  float getValueRead();
+
   // C++ 11
   // =======
   // Don't forget to declare these two. You want to make sure they
@@ -41,6 +44,8 @@ private:
   bool BTReady;
   bool BTOn;
   LEDMODE BTLedCommand;
+
+  float valueRead;
 
   bool WFhasSettings;
 };

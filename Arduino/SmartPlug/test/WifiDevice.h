@@ -6,14 +6,14 @@
 
 class WifiDevice{
 public:
-  
+
 //It's int because it needs to return an error status
 virtual int setup();
 virtual bool checkConnection();
 virtual bool disconnect();
 virtual bool connect();
 
-virtual bool postData();
+virtual int postData();
 virtual bool getCommands();
 virtual bool pingBack();
 

@@ -14,6 +14,7 @@ Flags::Flags(){
   BTBtnRequest=false;
   BTReady=false;
   BTLedCommand=off;
+  valueRead=0.0;
 
 }
 
@@ -48,4 +49,11 @@ void Flags::setWFhasSettings(bool in){
 }
 bool Flags::getWFhasSettings(){
   return WFhasSettings;
+}
+
+void Flags::setValueRead(float in){
+  valueRead=in;
+}
+float Flags::getValueRead(){
+  return valueRead;
 }

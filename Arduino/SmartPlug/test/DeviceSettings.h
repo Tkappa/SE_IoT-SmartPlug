@@ -51,12 +51,12 @@ private:
   Settings();
   static Settings * instance;
   char serverip[30];
-  char serverport[10];
+  char serverport[5];
   unsigned char routine[(ROUTINELEN/8)+1];
   float maxWattage;
-  char secretKey[10];
-  char ID[5];
-  char wifiSSID[100];
+  char secretKey[5];
+  char ID[3];
+  char wifiSSID[20];
   char wifiPassword[20];
 
 
