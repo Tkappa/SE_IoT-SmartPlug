@@ -9,15 +9,18 @@
 #include "CommandParser.h"
 #include <avr/pgmspace.h>
 
+#define ESPDEBUGPRINTRESPONSES
+#define ESPDEBUGPRINTCOMMANDS
+#define ESPDEBUGVERBOSE
+
+
 #define WIFITIMEOUT 5
 #define CONNECTTRIES 15
 #define BUFFERSIZE 10
 
 enum ESPsetup {ESP_getSettings,ESP_checkconn,ESP_disconnect,ESP_connect,ESP_skipTick,ESP_readResponse};
 enum ESPpostData{ESPP_openSCK,ESPP_checkConn,ESPP_cipsend,ESPP_senddata,ESPP_checkSent,ESPP_addBuffer};
-
 enum ESPgetData{ESPG_openSCK,ESPG_checkConn,ESPG_cipsend,ESPG_senddata,ESPG_checkSent,ESPG_handle,ESPG_addBuffer};
-
 enum ESPpingRecv{ESPR_openSCK,ESPR_checkConn,ESPR_cipsend,ESPR_senddata,ESPR_checkSent,ESPR_addBuffer};
 
 
@@ -28,46 +31,38 @@ public:
   WifiESP8266(int tx,int rx);
 
   int setup();
-  bool checkConnection();
-  bool disconnect();
-  bool connect();
 
-  int postData();
+  bool postData();
   bool getCommands();
   bool pingBack();
-  int freeRum () {
-  extern int __heap_start, *__brkval;
-  int v;
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-};
+
 
 private:
+  //Finite state operations
   ESPsetup setupStatus;
   ESPpostData postDataStatus;
   ESPgetData getDataStatus;
   ESPpingRecv pingBackStatus;
 
-  char serverip[30];
-  char serverport[5];
-  char secretKey[5];
-  char ID[3];
-  char wifiSSID[20];
-  char wifiPassword[20];
+  //Used check the freshness of the recieved command, and to inform the server that it has been recieved
   char lastCMDID[5];
 
+  //Used to keep a buffer for when the server is temporanely offline
   float bufferValuesArray[BUFFERSIZE];
   uint8_t lastSent;
   uint8_t lastEntered;
-  float currentReading;
   int bufferCurrentSize;
 
-    //  String dd = "Content-Length:" + String(data.length());"
-
-
+  //Useful classes for parsing input
   WordFinder * currToFind;
   CommandParser * parser;
+
+  //Timeout variables
   int setupBusyWaiting;
   int triesBeforeTimeout;
+
+  //Used to clean the input/output buffers of the SoftwareSerial
+  void completeSerialFlush();
 };
 
 #endif

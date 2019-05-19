@@ -9,11 +9,8 @@ public:
 
 //It's int because it needs to return an error status
 virtual int setup();
-virtual bool checkConnection();
-virtual bool disconnect();
-virtual bool connect();
 
-virtual int postData();
+virtual bool postData();
 virtual bool getCommands();
 virtual bool pingBack();
 

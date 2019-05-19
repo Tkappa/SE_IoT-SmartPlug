@@ -1,7 +1,7 @@
 #ifndef __WORDFINDER__
 #define __WORDFINDER__
 
-//#define DEBUG
+//#define WPDEBUG
 
 #include "Arduino.h"
 
@@ -13,14 +13,14 @@ public:
   void setWord(char *  toFind){
     wordToFind=toFind;
     currAt=0;
-    #ifdef DEBUG
+    #ifdef WPDEBUG
       Serial.print("Word to find:");
       Serial.println(wordToFind);
     #endif
   }
 
   bool search(char c){
-    #ifdef DEBUG
+    #ifdef WPDEBUG
       Serial.print(c);
       Serial.print("=");
       Serial.println(wordToFind[currAt]);
