@@ -5,6 +5,7 @@ var path=require('path');
 var r=0;
 var b=0;
 var g=0;
+var cmd=1000;
 
 var bodyParser = require('body-parser');
 
@@ -31,6 +32,11 @@ app.post('/postc',function(req,res){
 	b=hehe.b;
 	res.redirect("/");
 });
+app.get('/cmd',function(req,res){
+	res.send("SP+DSW="+cmd+";1000;-");
+	console.log("chiamato");
+	cmd=cmd+1;
+});
 
 app.post('/recv',function(req,res){
 	var values=req.body.values;
@@ -45,6 +51,15 @@ app.post('/recv',function(req,res){
 	res.sendStatus(200);
 });
 
+app.post('/confirmcmd',function(req,res){
+	var values=req.body.cmd;
+	var id=req.body.id;
+	var key=req.body.key;
+
+	console.log("id : "+ id+"con chiave "+key+" ha ricevuto il comando "+values);
+	console.log("(^: huhu"+ new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds());
+	res.sendStatus(200);
+});
 app.get('/color',function(req,res){
 	res.sendFile(path.join(__dirname+'/color.html'));
 });

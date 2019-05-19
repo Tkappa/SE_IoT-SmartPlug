@@ -26,11 +26,11 @@ int lastmillis=0;
 bool pressedLastTick=false;
 int ledState=LOW;
 
-BTHC05 * btDev=new BTHC05(BTRX,BTTX,BTVCC,BTATMODE,BTSTATUS);
+//BTHC05 * btDev=new BTHC05(BTRX,BTTX,BTVCC,BTATMODE,BTSTATUS);
 WifiESP8266 * wifiDev = new WifiESP8266(WFRX,WFTX);
 
-BluetoothInit btInitRout(btDev);
-BluetoothRoutine btMsgRoutine(btDev);
+//BluetoothInit btInitRout(btDev);
+//BluetoothRoutine btMsgRoutine(btDev);
 WifiRoutine wifiRout(wifiDev);
 
 
@@ -43,12 +43,12 @@ timer.setupPeriod(basePeriod);
  Serial.begin(9600);
  while (!Serial) {};
 
- btDev->begin(9600);
+ //btDev->begin(9600);
  wifiDev->begin(4800);
 
- btInitRout.init(1000);
- btMsgRoutine.init(1000);
- wifiRout.init(1500);
+ //btInitRout.init(1000);
+ //btMsgRoutine.init(1000);
+ wifiRout.init(500);
  pinMode(BTBUTTON, INPUT);
  pinMode(BTLED,OUTPUT);
  Flags::getInstance()->setWFhasSettings(true);
@@ -66,7 +66,7 @@ void loop(){
   timer.waitForNextTick();
   //Serial.println(millis()-lastmillis);
   lastmillis=millis();
-
+/*
   if(btInitRout.updateAndCheckTime(basePeriod)){
     btInitRout.tick();
 
@@ -74,7 +74,7 @@ void loop(){
   if(btMsgRoutine.updateAndCheckTime(basePeriod)){
     btMsgRoutine.tick();
     
-  }
+  }*/
   if(wifiRout.updateAndCheckTime(basePeriod)){
     //Serial.print("hmm");
     wifiRout.tick();

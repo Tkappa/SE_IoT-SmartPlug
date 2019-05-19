@@ -6,7 +6,8 @@
 #define NUMBERMAXPARAMS 4
 #define PARAMSMAXSIZE 20
 
-#define DEBUG
+//#define DEBUGPARSE
+#define DEBUGMSGFOUND
 
 #include "Arduino.h"
 
@@ -20,7 +21,6 @@ class CommandParser{
 
   ParseMode currentMode;
 
-  String wordToFind;
   int nCommands;
   int nParams;
   int commandFound;
@@ -48,7 +48,7 @@ public:
     currentParamLen=0;
   }
 
-  String getParam(int n){
+  char* getParam(int n){
     return parameters[n];
   }
 
@@ -68,7 +68,7 @@ public:
     switch(currentMode){
       case PM_search:
         for(int i=0;i<nCommands;i++){
-          #ifdef DEBUG
+          #ifdef DEBUGPARSE
             Serial.print(commandsToParse[i][currentPositions[i]]);
             Serial.print("=");
             Serial.println(c);
@@ -78,7 +78,7 @@ public:
               commandFound=i;
               currentParam=0;
               currentMode=PM_params;
-              #ifdef DEBUG
+              #ifdef DEBUGMSGFOUND
                 Serial.print(F("Command found - "));
                 Serial.println(commandsToParse[commandFound]);
               #endif
@@ -101,7 +101,7 @@ public:
         else{
           parameters[currentParam][currentParamLen]='\0';
           currentParamLen=0;
-          #ifdef DEBUG
+          #ifdef DEBUGMSGFOUND
             Serial.print(F("Param "));
             Serial.print(currentParam);
             Serial.print(F(" found - "));
@@ -113,7 +113,7 @@ public:
       break;
       case PM_checkend:
         if(c=='-'){
-          #ifdef DEBUG
+          #ifdef DEBUGMSGFOUND
             Serial.println(F("Finished parsing"));
           #endif
           return commandFound;
