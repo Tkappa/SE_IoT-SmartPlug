@@ -46,12 +46,6 @@ void WifiRoutine::tick(){
         state=WFR_pingServer;
       }
       break;
-    /*case WFR_handleCommand:
-      if(currentDevice->setup()){
-        state=WFR_postData;
-      }
-    break;
-    */
     case WFR_pingServer:
       if(currentDevice->pingBack()){
         state=WFR_postData;

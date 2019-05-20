@@ -1,3 +1,4 @@
+
 #include "Timer.h"
 #include "DeviceSettings.h"
 #include "BluetoothInitTask.h"
@@ -52,13 +53,16 @@ timer.setupPeriod(basePeriod);
  pinMode(BTBUTTON, INPUT);
  pinMode(BTLED,OUTPUT);
  Flags::getInstance()->setWFhasSettings(true);
- Settings::getInstance()->setWifiSSID("Almawifi per poveri");
+ Flags::getInstance()->setValueRead(123.456);
+ Settings::getInstance()->getEEPROMSettings();
+
+ //Inutilizzate ora che c'è la EEPROM
+ /*Settings::getInstance()->setWifiSSID("Almawifi per poveri");
  Settings::getInstance()->setWifiPassword("SanVitale45");
  Settings::getInstance()->setServerIp("192.168.1.63");
- Settings::getInstance()->setServerPort("8000");
- Flags::getInstance()->setValueRead(123.456);
- Settings::getInstance()->setSecretKey("1234");
- Settings::getInstance()->setID("01");
+ Settings::getInstance()->setServerPort("8000");*/
+ /*Settings::getInstance()->setSecretKey("1234");
+ Settings::getInstance()->setID("01");*/
  Serial.println(freeRam());
 
 }

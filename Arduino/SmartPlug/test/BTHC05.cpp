@@ -1,5 +1,5 @@
 
-#include "BTHC05.h";
+#include "BTHC05.h"
 
 
 BTHC05::BTHC05(int tx,int rx,int invccPin,int inatPin,int inStatePin)/*:BluetoothDevice(tx,rx)*/{
