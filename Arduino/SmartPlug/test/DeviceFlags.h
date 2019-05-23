@@ -25,8 +25,33 @@ public:
   void setWFhasSettings(bool in);
   bool getWFhasSettings();
 
+  void setWFhasServerSettings(bool in);
+  bool getWFhasServerSettings();
+
   void setValueRead(float in);
   float getValueRead();
+
+
+  void setHasTime(bool in);
+  bool getHasTime();
+
+  void setSetupTime(int in);
+  int getSetupTime();
+
+  void setMasterOnOff(bool in);
+  int getMasterOnOff();
+
+
+  bool getWifiLedCommand();
+  bool getDevLedCommand();
+  bool getPowLedCommand();
+  void setWifiLedCommand(LEDMODE in);
+  void setDevLedCommand(LEDMODE in);
+  void setPowLedCommand(LEDMODE in);
+
+
+  void setDeviceReady(bool in);
+  bool getDeviceReady();
 
   // C++ 11
   // =======
@@ -44,10 +69,21 @@ private:
   bool BTReady;
   bool BTOn;
   LEDMODE BTLedCommand;
+  LEDMODE WifiLedCommand;
+  LEDMODE DevLedCommand;
+  LEDMODE PowLedCommand;
 
   float valueRead;
 
   bool WFhasSettings;
+  bool WFhasServerSettings;
+
+  bool hasTime;
+  int setupTime;
+
+  bool masterOnOff;
+
+  bool DeviceReady;
 };
 
 #endif

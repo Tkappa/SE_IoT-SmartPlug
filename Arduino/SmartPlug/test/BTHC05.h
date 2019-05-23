@@ -6,6 +6,8 @@
 #include "WordFinder.h"
 #include "CommandParser.h"
 #include "BluetoothDevice.h"
+#include "DeviceSettings.h"
+#include "DeviceFlags.h"
 
 enum HCSetup {BTHCSS_enterAtMode,BTHCSS_waitForPairable};
 

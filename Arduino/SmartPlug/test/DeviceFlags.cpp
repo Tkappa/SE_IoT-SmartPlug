@@ -14,7 +14,17 @@ Flags::Flags(){
   BTBtnRequest=false;
   BTReady=false;
   BTLedCommand=off;
+  WifiLedCommand=off;
+  DevLedCommand=off;
+  PowLedCommand=off;
+
   valueRead=0.0;
+  hasTime=false;
+  setupTime=0;
+  WFhasSettings=false;
+  WFhasServerSettings=false;
+  masterOnOff=true;
+  DeviceReady=false;
 
 }
 
@@ -51,9 +61,68 @@ bool Flags::getWFhasSettings(){
   return WFhasSettings;
 }
 
+void Flags::setWFhasServerSettings(bool in){
+  WFhasServerSettings=in;
+}
+bool Flags::getWFhasServerSettings(){
+  return WFhasServerSettings;
+}
+
 void Flags::setValueRead(float in){
   valueRead=in;
 }
 float Flags::getValueRead(){
   return valueRead;
+}
+
+
+
+void Flags::setHasTime(bool in){
+  hasTime=in;
+}
+bool Flags::getHasTime(){
+  return hasTime;
+}
+
+void Flags::setSetupTime(int in){
+  setupTime=in;
+}
+int Flags::getSetupTime(){
+  return setupTime;
+}
+
+void Flags::setMasterOnOff(bool in){
+  masterOnOff=in;
+}
+int Flags::getMasterOnOff(){
+  return masterOnOff;
+}
+
+
+bool Flags::getWifiLedCommand(){
+  return WifiLedCommand;
+}
+
+bool Flags::getDevLedCommand(){
+  return DevLedCommand;
+}
+bool Flags::getPowLedCommand(){
+  return PowLedCommand;
+}
+void Flags::setWifiLedCommand(LEDMODE in){
+  WifiLedCommand=in;
+}
+
+void Flags::setDevLedCommand(LEDMODE in){
+  DevLedCommand=in;
+}
+void Flags::setPowLedCommand(LEDMODE in){
+  PowLedCommand=in;
+}
+
+void Flags::setDeviceReady(bool in){
+  DeviceReady=in;
+}
+bool Flags::getDeviceReady(){
+  return DeviceReady;
 }

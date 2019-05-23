@@ -1,4 +1,4 @@
-/*#ifndef __DEVINIT__
+#ifndef __DEVINIT__
 #define __DEVINIT__
 
 #define MAXTRIES 30
@@ -15,11 +15,11 @@ enum InitStatus{INT_getSettings,INT_adjustReadings,INT_setupDone};
 
 
 
-class DeviceInit: public Task{
+class DeviceRout: public Task{
 
 
 public:
-  DeviceInit(WattageReader * inCurrDevice);
+  DeviceRout(WattageReader * inCurrDevice);
 
   void init(int basePeriod);
   void tick();
@@ -32,4 +32,3 @@ private:
 };
 
 #endif
-*/

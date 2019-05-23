@@ -38,6 +38,12 @@ app.get('/cmd',function(req,res){
 	cmd=cmd+1;
 });
 
+app.get('/time',function(req,res){
+	var date = new Date();
+	var time = (date.getHours()*60+date.getMinutes())*60+date.getSeconds();
+	res.send("SP+TM="+time+";-");
+});
+
 app.post('/recv',function(req,res){
 	var values=req.body.values;
 	var id=req.body.id;

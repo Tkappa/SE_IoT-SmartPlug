@@ -29,11 +29,10 @@ void Settings::setServerPort(char* port){
   strcpy(settingsInstance.serverport,port);
   writeEEPROMSettings();
 }
-/*void Settings::setRoutine(bool inroutine[ROUTINELEN]){
-  for(int i;i<ROUTINELEN;i++){
-    routine[i]=inroutine[i];
-  }
-}*/
+void Settings::setRoutine(char* inroutine){
+  strcpy(settingsInstance.routine,inroutine);
+  writeEEPROMSettings();
+}
 void Settings::setMaxWattage(int wattage){
   settingsInstance.maxWattage= wattage;
   writeEEPROMSettings();

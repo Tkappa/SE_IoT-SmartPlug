@@ -8,6 +8,7 @@
 #include "WordFinder.h"
 #include "CommandParser.h"
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 
 #define ESPDEBUGPRINTRESPONSES
 #define ESPDEBUGPRINTCOMMANDS
@@ -24,7 +25,6 @@ enum ESPgetData{ESPG_openSCK,ESPG_checkConn,ESPG_cipsend,ESPG_senddata,ESPG_chec
 enum ESPpingRecv{ESPR_openSCK,ESPR_checkConn,ESPR_cipsend,ESPR_senddata,ESPR_checkSent,ESPR_addBuffer};
 
 
-
 class WifiESP8266 : public WifiDevice{
 
 public:
@@ -35,7 +35,8 @@ public:
   bool postData();
   bool getCommands();
   bool pingBack();
-
+  
+  void resetFSM();
 
 private:
   //Finite state operations

@@ -39,6 +39,7 @@ public:
   void setMaxWattage(int wattage);
   void setSecretKey(char* key);
   void setID(char* inid);
+  void setRoutine(char* inroutine);
 
   bool getEEPROMSettings();
 

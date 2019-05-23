@@ -26,6 +26,7 @@ BTHC05::BTHC05(int tx,int rx,int invccPin,int inatPin,int inStatePin)/*:Bluetoot
   parser->addCommand("MM=");//=<onoff>;-
   parser->addCommand("MF=");//<fastmode>;-
   parser->addCommand("SS=");//<serverip>;<serverport>;<DevID>;<DevKey>
+  parser->addCommand("TM=");//<time>;-
   currToFind = new WordFinder();
 
 }
@@ -85,10 +86,58 @@ bool BTHC05::isPaired(){
   return false;
 }
 
+
+/*
+Server
+parser->addCommand("WS=");//<ssid>;<pswd>;0
+parser->addCommand("DSW="); //"<wattage>;-"1
+parser->addCommand("DSR=");//<routine>;-2
+parser->addCommand("MM=");//=<onoff>;-3
+parser->addCommand("MF=");//<fastmode>;-4
+parser->addCommand("SS=");//<serverip>;<serverport>;<DevID>;<DevKey>5
+parser->addCommand("TM=");//<time>;- 6
+*/
+
 bool BTHC05::handleMessages(){
   while(btChannel->available()){
     char c= btChannel->read();
-    if(parser->parse(c)!=-1){
+    int commandparsed=parser->parse(c);
+    if(commandparsed!=-1){
+      switch (commandparsed) {
+        case 0: //WS=");//<ssid>;<pswd>;0
+          Settings::getInstance()->setWifiSSID(parser->getParam(0));
+          Settings::getInstance()->setWifiPassword(parser->getParam(1));
+          Flags::getInstance()->setWFhasSettings(true);
+        break;
+        case 1: //DSW="); //"<wattage>;-"1
+          Settings::getInstance()->setMaxWattage(atoi(parser->getParam(0)));
+        break;
+        case 2://DSR=");//<routine>;-2
+          Settings::getInstance()->setRoutine(parser->getParam(0));
+        break;
+        case 3://MM=");//=<onoff>;-3
+          if(parser->getParam(0)[0]=="T"){
+            Flags::getInstance()->setMasterOnOff(true);
+          }
+          else{
+            Flags::getInstance()->setMasterOnOff(false);
+          }
+        break;
+        case 4://"MF=");//<fastmode>;-4
+          //Toimplement
+        break;
+        case 5://SS=");//<serverip>;<serverport>;<DevID>;<DevKey>5
+          Settings::getInstance()->setServerIp(parser->getParam(0));
+          Settings::getInstance()->setServerPort(parser->getParam(1));
+          Settings::getInstance()->setID(parser->getParam(2));
+          Settings::getInstance()->setSecretKey(parser->getParam(3));
+          Flags::getInstance()->setWFhasServerSettings(true);
+        break;
+        case 6://TM=");//<time>;- 6
+          Flags::getInstance()->setSetupTime(atoi(parser->getParam(0)));
+          Flags::getInstance()->setHasTime(true);
+        break;
+      }
       parser->reset();
     }
   }

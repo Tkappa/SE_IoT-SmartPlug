@@ -17,6 +17,7 @@ WifiESP8266::WifiESP8266(int tx,int rx){
   parser->addCommand("DSW=");//<wattage>;- Used to set the wattage
   parser->addCommand("DSR=");//<routine>;- Used to set the routine
   parser->addCommand("MM=");//<onoff>;- Used to tell the device to turn on/pff
+  parser->addCommand("TM=");//<time>;- Used to teel the time to the device
 
   currToFind= new WordFinder();
 
@@ -289,7 +290,7 @@ bool WifiESP8266::getCommands(){
   char bigBuffer[200]; //used for post request
   char midBuffer[100]; //used for small AT Commands
   char smallBuffer[10]; //used to parse int and float
-
+  int parsedcommand=-1;
   switch(getDataStatus){
     case ESPG_openSCK:
       completeSerialFlush();
@@ -360,13 +361,40 @@ bool WifiESP8266::getCommands(){
         #ifdef ESPDEBUGPRINTRESPONSES
           Serial.print(c);
         #endif
-        if(parser->parse(c)!=-1){
+        parsedcommand=parser->parse(c);
+        if(parsedcommand!=-1){
           #ifdef ESPDEBUGVERBOSE
             Serial.println(F("Revieced a command!"));
           #endif
           //The first parameter is the command ID
+          /*
+          parser->addCommand("DSW=");//<wattage>;- Used to set the wattage0
+          parser->addCommand("DSR=");//<routine>;- Used to set the routine1
+          parser->addCommand("MM=");//<onoff>;- Used to tell the device to turn on/pff2
+          parser->addCommand("TM=")//<time>;- Used to teel the time to the device3
+          */
           strcpy(lastCMDID,parser->getParam(0));
+          switch (parsedcommand) {
+            case 0: //DSW="); //"<wattage>;-"0
+              Settings::getInstance()->setMaxWattage(atoi(parser->getParam(1)));
+            break;
+            case 1://DSR=");//<routine>;-1
+              Settings::getInstance()->setRoutine(parser->getParam(1));
+            break;
+            case 2://MM=");//=<onoff>;-3
+              if(parser->getParam(1)[0]=="T"){
+                Flags::getInstance()->setMasterOnOff(true);
+              }
+              else{
+                Flags::getInstance()->setMasterOnOff(false);
+              }
+            break;
+            case 3://TM=");//<time>;- 6
+              Flags::getInstance()->setSetupTime(atoi(parser->getParam(1)));
+              Flags::getInstance()->setHasTime(true);
+            break;
 
+          }
           getDataStatus=ESPG_openSCK;
           wifiChannel->println("AT+CIPCLOSE");
           return true;
@@ -505,6 +533,7 @@ bool WifiESP8266::pingBack(){
   return false;
 }
 
+
 void WifiESP8266::completeSerialFlush(){
   //Flushes the outgoing buffer
   wifiChannel->flush();
@@ -512,4 +541,12 @@ void WifiESP8266::completeSerialFlush(){
   while(wifiChannel->available()){
     wifiChannel->read();
   }
+}
+
+void WifiESP8266::resetFSM(){
+  setupStatus=ESP_getSettings;
+  postDataStatus=ESPP_openSCK;
+  getDataStatus=ESPG_openSCK;
+  pingBackStatus=ESPR_openSCK;
+  parser->reset();
 }
