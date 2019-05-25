@@ -32,10 +32,10 @@ public:
 
   int setup();
 
-  bool postData();
+  int postData();
   bool getCommands();
   bool pingBack();
-  
+
   void resetFSM();
 
 private:

@@ -116,7 +116,7 @@ bool BTHC05::handleMessages(){
           Settings::getInstance()->setRoutine(parser->getParam(0));
         break;
         case 3://MM=");//=<onoff>;-3
-          if(parser->getParam(0)[0]=="T"){
+          if(parser->getParam(0)[0]=='1'){
             Flags::getInstance()->setMasterOnOff(true);
           }
           else{

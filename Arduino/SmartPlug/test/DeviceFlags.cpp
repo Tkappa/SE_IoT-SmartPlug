@@ -99,14 +99,14 @@ int Flags::getMasterOnOff(){
 }
 
 
-bool Flags::getWifiLedCommand(){
+LEDMODE Flags::getWifiLedCommand(){
   return WifiLedCommand;
 }
 
-bool Flags::getDevLedCommand(){
+LEDMODE Flags::getDevLedCommand(){
   return DevLedCommand;
 }
-bool Flags::getPowLedCommand(){
+LEDMODE Flags::getPowLedCommand(){
   return PowLedCommand;
 }
 void Flags::setWifiLedCommand(LEDMODE in){

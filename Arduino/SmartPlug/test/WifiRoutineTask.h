@@ -18,6 +18,7 @@ public:
 
   void init(int basePeriod);
   void tick();
+  void reset();
 
 protected:
   WifiDevice * currentDevice;

@@ -14,6 +14,7 @@ void BluetoothInit::tick(){
   switch (state) {
     case BTI_checkBtn:
       //If the button was pressed and the BT device isn't ready yet it means that it needs to initialize
+      Serial.println(Flags::getInstance()->getBTBtnRequest());
       if(!Flags::getInstance()->getBTReady()&&Flags::getInstance()->getBTBtnRequest()){
         state=BTI_powerOn;
         currDevice->resetFSM();
@@ -39,13 +40,13 @@ void BluetoothInit::tick(){
     case BTI_waitBtFinish:
       if(!Flags::getInstance()->getBTOn()){
         Flags::getInstance()->setBTReady(false);
-        Flags::getInstance()->setBTBtnRequest(false);
         state = BTI_turnOff;
       }
     break;
     case BTI_turnOff:
       Flags::getInstance()->setBTLedCommand(off);
       if(currDevice->powerOff()){
+        Flags::getInstance()->setBTBtnRequest(false);
         state= BTI_checkBtn;
       }
     break;

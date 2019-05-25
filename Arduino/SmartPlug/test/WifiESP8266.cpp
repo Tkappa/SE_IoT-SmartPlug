@@ -128,7 +128,7 @@ int WifiESP8266::setup(){
 }
 
 
-bool WifiESP8266::postData(){
+int WifiESP8266::postData(){
   bool check= false;
   char bigBuffer[200]; //used for post request
   char midBuffer[100]; //used for small AT Commands
@@ -174,14 +174,14 @@ bool WifiESP8266::postData(){
       //We try to find connect to handle both the cases CONNECT OK and ALREADY CONNECTED
       currToFind->setWord("CONNECT");
       postDataStatus=ESPP_checkConn;
-      return false;
+      return 0;
     break;
     case ESPP_checkConn:
       while(wifiChannel->available()){
         char c = wifiChannel->read();
         if(currToFind->search(c)){
           postDataStatus=ESPP_cipsend;
-          return false;
+          return 0;
         }
       }
       //Connect was not found , it means an error happed, we add the value to the buffer and skip this cycle
@@ -232,7 +232,7 @@ bool WifiESP8266::postData(){
 
       wifiChannel->println(midBuffer);
       postDataStatus=ESPP_senddata;
-      return false;
+      return 0;
     break;
     case ESPP_senddata:
 
@@ -245,7 +245,7 @@ bool WifiESP8266::postData(){
       currToFind->setWord("200 OK");
       postDataStatus=ESPP_checkSent;
       triesBeforeTimeout=0;
-      return false;
+      return 0;
     break;
     case ESPP_checkSent:
       while(wifiChannel->available()){
@@ -264,7 +264,7 @@ bool WifiESP8266::postData(){
 
           //Closes the connection
           wifiChannel->println("AT+CIPCLOSE");
-          return true;
+          return 1;
         }
         //Serial.print((char)wifiChannel->read());
       }
@@ -272,16 +272,16 @@ bool WifiESP8266::postData(){
         //if ater WIFITIMEOUT Ticks we are still waiting for the message we consider it lost or error;
         postDataStatus=ESPP_addBuffer;
       }
-      return false;
+      return 0;
     break;
     case ESPP_addBuffer:
       //Error handling step, in this device we just ignore it as the buffer has already grown automatically
       postDataStatus=ESPP_openSCK;
       wifiChannel->println("AT+CIPCLOSE");
-      return true;
+      return -1;
     break;
   }
-  return false;
+  return 0;
 }
 
 
@@ -382,7 +382,7 @@ bool WifiESP8266::getCommands(){
               Settings::getInstance()->setRoutine(parser->getParam(1));
             break;
             case 2://MM=");//=<onoff>;-3
-              if(parser->getParam(1)[0]=="T"){
+              if(parser->getParam(1)[0]=="1"){
                 Flags::getInstance()->setMasterOnOff(true);
               }
               else{

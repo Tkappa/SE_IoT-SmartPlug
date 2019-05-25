@@ -25,7 +25,7 @@
 
 #define CTANALOGPIN 1
 
-#define RELAY 1
+#define RELAY A0
 #define BTTX 2 //La porta TX che esce dal device BT
 #define BTRX 3 //La porta RX che esce dal device BT
 #define BTVCC 4
@@ -101,30 +101,32 @@ void loop(){
     devRout.tick();
   }
   if(Flags::getInstance()->getDeviceReady()){
+    
+    if(btInitRout.updateAndCheckTime(basePeriod)){
+       btInitRout.tick();
+    }
     if(Flags::getInstance()->getBTBtnRequest()){
-        /*if(btInitRout.updateAndCheckTime(basePeriod)){
-          btInitRout.tick();
-        }
         if(btMsgRoutine.updateAndCheckTime(basePeriod)){
           btMsgRoutine.tick();
-        }*/
+        }
+        wifiRout.reset();
      }
     else{
-      /*if(wifiRout.updateAndCheckTime(basePeriod)){
+      if(wifiRout.updateAndCheckTime(basePeriod)){
         //Serial.print("hmm");
         wifiRout.tick();
         #ifdef DEBUG
           Serial.print(F("Ram remaining: "));
           Serial.println(freeRam());
         #endif
-      }*/
+      }
     }
-    /*if(powRout.updateAndCheckTime(basePeriod)){
+    if(powRout.updateAndCheckTime(basePeriod)){
       powRout.tick();
     }
-    if(uxRout.updateAndCheckTime(basePeriod)){
-      uxRout.tick();
-    }*/
+  }
+  if(uxRout.updateAndCheckTime(basePeriod)){
+    uxRout.tick();
   }
 }
 

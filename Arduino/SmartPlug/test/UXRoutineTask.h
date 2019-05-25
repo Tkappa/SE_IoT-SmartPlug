@@ -7,7 +7,7 @@
 #include "DeviceFlags.h"
 #include "Arduino.h"
 
-#define FLASHINGTICKLEN 4
+#define FLASHINGTICKLEN 8
 
 class UXRoutine:public Task{
 

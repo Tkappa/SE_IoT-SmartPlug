@@ -22,9 +22,11 @@ switch (state) {
   else{
     if(Flags::getInstance()->getMasterOnOff()){
       currentDevice->powerOn();
+      Flags::getInstance()->setPowLedCommand(on);
     }
     else{
       currentDevice->powerOff();
+      Flags::getInstance()->setPowLedCommand(off);
     }
   }
   break;
@@ -34,13 +36,16 @@ switch (state) {
     arrayIndex = currentTime/(MINUTESEVERYROUTINEINDEX*60);
     if(!Flags::getInstance()->getMasterOnOff()){
       currentDevice->powerOff();
+      Flags::getInstance()->setPowLedCommand(off);
     }
     else{
       if(Settings::getInstance()->getRoutinePos(arrayIndex)){
         currentDevice->powerOn();
+        Flags::getInstance()->setPowLedCommand(on);
       }
       else{
         currentDevice->powerOff();
+        Flags::getInstance()->setPowLedCommand(off);
       }
     }
   break;

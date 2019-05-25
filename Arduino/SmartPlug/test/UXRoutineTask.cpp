@@ -25,7 +25,6 @@ UXRoutine::UXRoutine(Led * inBtLed,Led * inWifiLed, Led * inDeviceLed, Led * inP
   void UXRoutine::tick(){
 
     //Check button
-    int state = digitalRead(BTButton);
     if (BTButton->isPressed()){
       if(buttonPressedlastTick){
         Flags::getInstance()->setBTBtnRequest(true);
@@ -75,7 +74,7 @@ UXRoutine::UXRoutine(Led * inBtLed,Led * inWifiLed, Led * inDeviceLed, Led * inP
       DeviceLedflash++;
       if(DeviceLedflash>=FLASHINGTICKLEN){
         DeviceLedflash=0;
-        BtLed->toggle();
+        DeviceLed->toggle();
       }
     }
     if(Flags::getInstance()->getDevLedCommand()==on){

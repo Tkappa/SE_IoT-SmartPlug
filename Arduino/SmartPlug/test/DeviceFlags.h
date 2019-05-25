@@ -42,9 +42,9 @@ public:
   int getMasterOnOff();
 
 
-  bool getWifiLedCommand();
-  bool getDevLedCommand();
-  bool getPowLedCommand();
+  LEDMODE getWifiLedCommand();
+  LEDMODE getDevLedCommand();
+  LEDMODE getPowLedCommand();
   void setWifiLedCommand(LEDMODE in);
   void setDevLedCommand(LEDMODE in);
   void setPowLedCommand(LEDMODE in);

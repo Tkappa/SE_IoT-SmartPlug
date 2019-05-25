@@ -10,9 +10,10 @@ public:
 //It's int because it needs to return an error status
 virtual int setup();
 
-virtual bool postData();
+virtual int postData();
 virtual bool getCommands();
 virtual bool pingBack();
+virtual void resetFSM();
 
 void begin(long baud){
   wifiChannel->begin(baud);

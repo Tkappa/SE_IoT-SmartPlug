@@ -312,8 +312,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     TextView text = findViewById(R.id.test);
                     if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+SS=10.12.13.14;8000;01;4242;-".getBytes());
+                        text.setText("yeboi"); //http://192.168.1.62:8000/
+                        conn.getOutputStream().write("BT+SS=192.168.1.62;8000;01;4242;-".getBytes());
                     }
                     else{
                         text.setText("noboi");

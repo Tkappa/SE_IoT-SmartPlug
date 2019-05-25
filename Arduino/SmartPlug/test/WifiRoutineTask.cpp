@@ -16,21 +16,24 @@ void WifiRoutine::tick(){
   int statusMsg;
   switch (state) {
     case WFR_hasSettings:
-      if(Flags::getInstance()->getWFhasSettings()){
+      if(Flags::getInstance()->getWFhasSettings()&&Flags::getInstance()->getWFhasServerSettings()){
         errorTollerance=0;
         state=WFR_setup;
+        Flags::getInstance()->setWifiLedCommand(flashing);
       }
     break;
     case WFR_setup:
       statusMsg=currentDevice->setup();
       if(statusMsg==1){
         state=WFR_postData;
+        Flags::getInstance()->setWifiLedCommand(on);
       }
       else if(statusMsg==-1){
         Serial.println(F("Error!:("));
         if(errorTollerance++>=3){
           Flags::getInstance()->setWFhasSettings(false);
           Serial.println(F("Basta ora mi sono annoiato"));
+          Flags::getInstance()->setWifiLedCommand(off);
           state=WFR_hasSettings;
         }
       }
@@ -52,4 +55,11 @@ void WifiRoutine::tick(){
       }
     break;
   }
+}
+
+void WifiRoutine::reset(){
+  currentDevice->resetFSM();
+  state=WFR_hasSettings;
+
+  Flags::getInstance()->setWifiLedCommand(off);
 }
