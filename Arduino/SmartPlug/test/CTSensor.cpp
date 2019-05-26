@@ -13,6 +13,7 @@ void CTSensor::begin(){
 
 
 void CTSensor::read(){
+  float valueread = 123.456;
   Flags::getInstance()->setValueRead(123.456);
 }
 /*  double Irms = emon.calcIrms(1480);

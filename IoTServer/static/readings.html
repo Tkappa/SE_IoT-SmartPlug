@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.css">
+
+    <title>Smart plug</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Smart plug web app</h1>
+        <p>These are the readings for the device <span id="idev"></span>!</p>
+      </div>
+      <div>
+        <p> Median value for today is : <span id="median"></span></p>
+      </div>
+      <table class="table">
+        <tbody id="tablebody">
+          <tr>
+            <td>
+              Date
+            </td>
+            <td>
+              Reading
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="./js/jquery-3.4.1.js"></script>
+    <script src="./js/jscookie-2.2.0min.js"></script>
+    <script src="./js/popper.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script>
+    function sameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
+    };
+
+    var recv= JSON.parse(Cookies.get("data"));
+    $("#idev").text(recv.id);
+
+    $(document).ready(function(){
+      $.get( "/tablereading?id="+recv.id, function( data ) {
+        var readings=data.readings;
+        readings.sort(function(a, b){return new Date(a.date) - new Date(b.date)});
+        readings.reverse();
+        var today= new Date();
+        var medianvalue=0;
+        var mediann=0;
+        readings.forEach(function(element){
+          $("#tablebody").append("<tr><td>"+element.date+"</td><td>"+element.reading+"</td></tr>");
+          if(sameDay(today,new Date(element.date))){
+            medianvalue=medianvalue+parseInt(element.reading);
+            mediann=mediann+1;
+          }
+        });
+        $("#median").text(parseInt(medianvalue/mediann));
+      });
+    });
+    </script>
+  </body>
+</html>

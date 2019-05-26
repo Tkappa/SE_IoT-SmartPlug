@@ -26,7 +26,6 @@ void WifiRoutine::tick(){
       statusMsg=currentDevice->setup();
       if(statusMsg==1){
         state=WFR_postData;
-        Flags::getInstance()->setWifiLedCommand(on);
       }
       else if(statusMsg==-1){
         Serial.println(F("Error!:("));
@@ -40,8 +39,13 @@ void WifiRoutine::tick(){
     break;
     case WFR_postData:
       Serial.println(F("Qui si sta bene"));
-      if(currentDevice->postData()==1){
+      statusMsg=currentDevice->postData();
+      if(statusMsg==1){
         state=WFR_getCommand;
+        Flags::getInstance()->setWifiLedCommand(on);
+      }
+      else if(statusMsg==-2){
+        //Buffer is full, the server is unreachable
       }
     break;
     case WFR_getCommand:

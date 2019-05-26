@@ -34,7 +34,13 @@ void DeviceRout::tick(){
       }
     break;
     case INT_setupDone:
+
       currDevice->read();
+
+      //Exceeded wattage!!
+      if(Flags::getInstance()->getValueRead()>Settings::getInstance()->getMaxWattage()){
+        Flags::getInstance()->setMasterOnOff(false);
+      }
     break;
   }
 }

@@ -14,10 +14,12 @@ WifiESP8266::WifiESP8266(int tx,int rx){
   strcpy(lastCMDID,'\0');
 
   parser= new CommandParser();
+  //!!!The param 0 for all these commands will be the commandid!!!
   parser->addCommand("DSW=");//<wattage>;- Used to set the wattage
   parser->addCommand("DSR=");//<routine>;- Used to set the routine
   parser->addCommand("MM=");//<onoff>;- Used to tell the device to turn on/pff
   parser->addCommand("TM=");//<time>;- Used to teel the time to the device
+  parser->addCommand("SUN=");//No params, removes all the settings from the device
 
   currToFind= new WordFinder();
 
@@ -242,7 +244,7 @@ int WifiESP8266::postData(){
         Serial.println(bigBuffer);
       #endif
       wifiChannel->println(bigBuffer);
-      currToFind->setWord("200 OK");
+      currToFind->setWord("SEND OK");
       postDataStatus=ESPP_checkSent;
       triesBeforeTimeout=0;
       return 0;
@@ -372,29 +374,40 @@ bool WifiESP8266::getCommands(){
           parser->addCommand("DSR=");//<routine>;- Used to set the routine1
           parser->addCommand("MM=");//<onoff>;- Used to tell the device to turn on/pff2
           parser->addCommand("TM=")//<time>;- Used to teel the time to the device3
+          parser->addCommand("SUN=")//No params, removes all the settings from the device4
           */
-          strcpy(lastCMDID,parser->getParam(0));
-          switch (parsedcommand) {
-            case 0: //DSW="); //"<wattage>;-"0
-              Settings::getInstance()->setMaxWattage(atoi(parser->getParam(1)));
-            break;
-            case 1://DSR=");//<routine>;-1
-              Settings::getInstance()->setRoutine(parser->getParam(1));
-            break;
-            case 2://MM=");//=<onoff>;-3
-              if(parser->getParam(1)[0]=="1"){
-                Flags::getInstance()->setMasterOnOff(true);
-              }
-              else{
-                Flags::getInstance()->setMasterOnOff(false);
-              }
-            break;
-            case 3://TM=");//<time>;- 6
-              Flags::getInstance()->setSetupTime(atoi(parser->getParam(1)));
-              Flags::getInstance()->setHasTime(true);
-            break;
+          //If the recieved command is diffrent than the last revcived it parses it, else it gets ignored
+          if(strcmp(lastCMDID,parser->getParam(0))!=0){
+            strcpy(lastCMDID,parser->getParam(0));
+            switch (parsedcommand) {
+              case 0: //DSW="); //"<wattage>;-"0
+                Settings::getInstance()->setMaxWattage(atoi(parser->getParam(1)));
+              break;
+              case 1://DSR=");//<routine>;-1
+                Settings::getInstance()->setRoutine(parser->getParam(1));
+              break;
+              case 2://MM=");//=<onoff>;-2
+                if(parser->getParam(1)[0]=='1'){
+                  Flags::getInstance()->setMasterOnOff(true);
+                }
+                else{
+                  Flags::getInstance()->setMasterOnOff(false);
+                }
+              break;
+              case 3://TM=");//<time>;- 3
+                Flags::getInstance()->setSetupTime(atoi(parser->getParam(1)));
+                Flags::getInstance()->setHasTime(true);
+              break;
+              case 4://"SUN=")-4
+                Settings::getInstance()->setServerIp("\0");
+                Settings::getInstance()->setServerPort("\0");
+                Flags::getInstance()->setWFhasServerSettings(false);
+                Flags::getInstance()->setWifiLedCommand(flashing);
+              break;
 
+            }
           }
+
           getDataStatus=ESPG_openSCK;
           wifiChannel->println("AT+CIPCLOSE");
           return true;
