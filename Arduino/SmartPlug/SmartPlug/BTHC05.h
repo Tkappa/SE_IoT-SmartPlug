@@ -9,6 +9,10 @@
 #include "DeviceSettings.h"
 #include "DeviceFlags.h"
 
+//debug Readings
+//#define BTVERBOSE
+
+
 enum HCSetup {BTHCSS_enterAtMode,BTHCSS_waitForPairable};
 
 class BTHC05 : public BluetoothDevice{

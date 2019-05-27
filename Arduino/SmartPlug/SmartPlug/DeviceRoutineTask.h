@@ -28,6 +28,7 @@ public:
 private:
   WattageReader * currDevice;
   InitStatus state;
+  bool doublecheck;
 
 };
 

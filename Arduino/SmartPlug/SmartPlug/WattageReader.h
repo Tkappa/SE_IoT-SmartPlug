@@ -5,7 +5,7 @@ class WattageReader{
 public:
   virtual void begin();
   virtual void read();
-  virtual bool weigth();
+  virtual bool weight();
 };
 
 #endif

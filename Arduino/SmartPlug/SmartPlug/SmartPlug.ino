@@ -21,7 +21,8 @@
 #include "ButtonImpl.h"
 
 
-#define DEBUG
+//#define DEBUG
+//#define TIMEDEBUG
 
 #define CTANALOGPIN 1
 
@@ -39,6 +40,9 @@
 #define BTLEDPIN 11
 #define WIFILEDPIN 12
 #define POWLEDPIN 13
+
+
+
 
 int lastmillis=0;
 bool pressedLastTick=false;
@@ -95,14 +99,16 @@ timer.setupPeriod(basePeriod);
 }
 void loop(){
   timer.waitForNextTick();
-  //Serial.print("Time:");
-  //Serial.println(millis()-lastmillis);
-  lastmillis=millis();
+  #ifdef TIMEDEBUG
+    Serial.print("Time:");
+    Serial.println(millis()-lastmillis);
+    lastmillis=millis();
+  #endif
   if(devRout.updateAndCheckTime(basePeriod)){
     devRout.tick();
   }
   if(Flags::getInstance()->getDeviceReady()){
-    
+
     if(btInitRout.updateAndCheckTime(basePeriod)){
        btInitRout.tick();
     }
@@ -114,12 +120,7 @@ void loop(){
      }
     else{
       if(wifiRout.updateAndCheckTime(basePeriod)){
-        //Serial.print("hmm");
         wifiRout.tick();
-        #ifdef DEBUG
-          Serial.print(F("Ram remaining: "));
-          Serial.println(freeRam());
-        #endif
       }
     }
     if(powRout.updateAndCheckTime(basePeriod)){
@@ -129,6 +130,10 @@ void loop(){
   if(uxRout.updateAndCheckTime(basePeriod)){
     uxRout.tick();
   }
+  #ifdef DEBUG
+    Serial.print(F("Ram remaining: "));
+    Serial.println(freeRam());
+  #endif
 }
 
 

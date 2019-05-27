@@ -28,10 +28,14 @@ void WifiRoutine::tick(){
         state=WFR_postData;
       }
       else if(statusMsg==-1){
-        Serial.println(F("Error!:("));
+        #ifdef WFROUTDEBUGVERBOSE
+          Serial.println(F("There was an error in the connection"));
+        #endif
         if(errorTollerance++>=5){
           Flags::getInstance()->setWFhasSettings(false);
-          Serial.println(F("Basta ora mi sono annoiato"));
+          #ifdef WFROUTDEBUGVERBOSE
+            Serial.println(F("Stopping trying to connect, to many errors"));
+          #endif
           Flags::getInstance()->setWifiLedCommand(off);
           state=WFR_hasSettings;
         }
@@ -49,6 +53,7 @@ void WifiRoutine::tick(){
       }
     break;
     case WFR_getCommand:
+      //As the operation is time sensitive (The buffer fills fast) we let the device know so it can skip time consuming tasks
       Flags::getInstance()->setIsPosting(true);
       if(currentDevice->getCommands()){
         Flags::getInstance()->setIsPosting(false);

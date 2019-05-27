@@ -69,14 +69,6 @@ private:
 
   void writeEEPROMSettings();
   EEPROMSettings settingsInstance;
-  /*char serverip[30];
-  char serverport[5];
-  unsigned char routine[(ROUTINELEN/8)+1];
-  float maxWattage;
-  char secretKey[5];
-  char ID[3];
-  char wifiSSID[20];
-  char wifiPassword[20];*/
 
 
 };

@@ -7,7 +7,7 @@ DeviceRout::DeviceRout(WattageReader * inCurrDevice){
 void DeviceRout::init(int basePeriod){
   Task::init(basePeriod);
   state=INT_getSettings;
-
+  doublecheck=false;
   Flags::getInstance()->setDevLedCommand(flashing);
 }
 
@@ -16,9 +16,9 @@ void DeviceRout::init(int basePeriod){
 void DeviceRout::tick(){
   switch (state) {
     case INT_getSettings:
+      //Gets the settings from the EEPROM
       Settings::getInstance()->getEEPROMSettings();
       if(strcmp(Settings::getInstance()->getWifiSSID(),"\0")!=0){
-        //Has wifi settings
         Flags::getInstance()->setWFhasSettings(true);
       }
       if(strcmp(Settings::getInstance()->getServerIp(),"\0")!=0){
@@ -27,7 +27,7 @@ void DeviceRout::tick(){
       state=INT_adjustReadings;
     break;
     case INT_adjustReadings:
-      if(currDevice->weigth()){
+      if(currDevice->weight()){
         state=INT_setupDone;
         Flags::getInstance()->setDeviceReady(true);
         Flags::getInstance()->setDevLedCommand(on);
@@ -38,9 +38,16 @@ void DeviceRout::tick(){
         currDevice->read();
       }
 
-      //Exceeded wattage!!
+      //Exceeded wattage we need to turn on
       if(Flags::getInstance()->getValueRead()>Settings::getInstance()->getMaxWattage()){
-        Flags::getInstance()->setMasterOnOff(false);
+        //Used to avoid false positives
+        if(doublecheck==true){
+          Flags::getInstance()->setMasterOnOff(false);
+        }
+        doublecheck=true;
+      }
+      else{
+        doublecheck=false;
       }
     break;
   }

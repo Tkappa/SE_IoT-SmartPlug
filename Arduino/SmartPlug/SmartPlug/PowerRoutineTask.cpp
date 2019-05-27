@@ -31,7 +31,7 @@ switch (state) {
   }
   break;
   case POW_clock:
-    //Modulo a day in seconds
+    //Unused , was meant for a routine function
     currentTime=(currentTime+(basePeriod/1000))%(24*60*60);
     arrayIndex = currentTime/(MINUTESEVERYROUTINEINDEX*60);
     if(!Flags::getInstance()->getMasterOnOff()){

@@ -67,12 +67,14 @@ public:
   int parse(char c){
     switch(currentMode){
       case PM_search:
+      //advances the readings on each command string if it matched character
         for(int i=0;i<nCommands;i++){
           #ifdef DEBUGPARSE
             Serial.print(commandsToParse[i][currentPositions[i]]);
             Serial.print("=");
             Serial.println(c);
           #endif
+          //IF the char matched is = it means the command is completed and we are not parsing params
           if(commandsToParse[i][currentPositions[i]]==c){
             if(c=='='){
               commandFound=i;
@@ -92,6 +94,7 @@ public:
           }
         }
       break;
+      //The parameters are divided by ;
       case PM_params:
         if(c!=';'){
           char cat = (char)c;
@@ -111,6 +114,7 @@ public:
           currentMode=PM_checkend;
         }
       break;
+      //If a parameter is followed by a - it means the command is over
       case PM_checkend:
         if(c=='-'){
           #ifdef DEBUGMSGFOUND

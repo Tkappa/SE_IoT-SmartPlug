@@ -47,13 +47,10 @@ void Settings::setID(char* inid){
 }
 
 Settings::Settings(){
-  Serial.println("Inizio costruttore");
   for(int i =0;i<ROUTINELEN;i++){
-    //routine[i]=true;
     this->setRoutineAt(i,true);
   }
   settingsInstance.maxWattage=10000;
-  Serial.println("Fine costruttore");
 }
 
 Settings * Settings::getInstance(){

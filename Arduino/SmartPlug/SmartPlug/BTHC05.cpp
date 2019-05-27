@@ -20,13 +20,13 @@ BTHC05::BTHC05(int tx,int rx,int invccPin,int inatPin,int inStatePin)/*:Bluetoot
 
   parser= new CommandParser();
 
-  parser->addCommand("WS=");//<ssid>;<pswd>;
-  parser->addCommand("DSW="); //"<wattage>;-"
-  parser->addCommand("DSR=");//<routine>;-
-  parser->addCommand("MM=");//=<onoff>;-
-  parser->addCommand("MF=");//<fastmode>;-
-  parser->addCommand("SS=");//<serverip>;<serverport>;<DevID>;<DevKey>
-  parser->addCommand("TM=");//<time>;-
+  parser->addCommand("WS=");//<ssid>;<pswd>; //Sets the wifi ssid and password to the device
+  parser->addCommand("DSW="); //"<wattage>;-" //Sets the max wattage to the device
+  parser->addCommand("DSR=");//<routine>;- //Not used
+  parser->addCommand("MM=");//=<onoff>;- //Turns on/off the device
+  parser->addCommand("MF=");//<fastmode>;- //Starts sending readings to the app
+  parser->addCommand("SS=");//<serverip>;<serverport>;<DevID>;<DevKey> //Sets the various Server options to the device
+  parser->addCommand("TM=");//<time>;- //Not used
   currToFind = new WordFinder();
 
 }
@@ -49,14 +49,13 @@ bool BTHC05::setup(){
     break;
     case BTHCSS_waitForPairable:
       //Will wait until the device is in the PAIRABLE status
-      //TODO: limited amout of tries before turning the device off?
       btChannel->println("AT+STATE");
       while(btChannel->available()){
         char c = btChannel->read();
-        #ifdef DEBUG
+        #ifdef BTVERBOSE
           Serial.print(c);
         #endif
-        if(currToFind->search(c)){//btChannel->read())){
+        if(currToFind->search(c)){
           btChannel->flush();
           //Turn of AT mode so we can send messages to the device once paired
           digitalWrite(atPin,LOW);
@@ -88,17 +87,6 @@ bool BTHC05::isPaired(){
   return false;
 }
 
-
-/*
-Server
-parser->addCommand("WS=");//<ssid>;<pswd>;0
-parser->addCommand("DSW="); //"<wattage>;-"1
-parser->addCommand("DSR=");//<routine>;-2
-parser->addCommand("MM=");//=<onoff>;-3
-parser->addCommand("MF=");//<fastmode>;-4
-parser->addCommand("SS=");//<serverip>;<serverport>;<DevID>;<DevKey>5
-parser->addCommand("TM=");//<time>;- 6
-*/
 
 bool BTHC05::handleMessages(){
   char smallBuffer[10];
@@ -150,12 +138,16 @@ bool BTHC05::handleMessages(){
     }
 
   }
+
+  //It the device is in fast mode it means that it needs to send his readings to the app
   if(Flags::getInstance()->getFastModeStatus()){
     dtostrf(Flags::getInstance()->getValueRead(),6,2,smallBuffer);
     btChannel->write(smallBuffer);
     strcat(smallBuffer,";");
-    Serial.print("sent : ");
-    Serial.println(smallBuffer);
+    #ifdef BTVERBOSE
+      Serial.print("sent : ");
+      Serial.println(smallBuffer);
+    #endif
   }
 }
 
