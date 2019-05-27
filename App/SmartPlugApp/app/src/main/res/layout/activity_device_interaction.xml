@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".DeviceInteraction">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,33 +20,16 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_device_interaction" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/reading"
         android:layout_width="match_parent"
-        android:layout_height="467dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="200dp">
-
-        <LinearLayout
-            android:id="@+id/layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom|end"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get devices" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:gravity="center"
+        android:text="Enable fast mode to get readings from the device"
+        android:textSize="40dp"
+        android:textStyle="bold" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -13,7 +13,7 @@ var G_maxhousewattage=0;
 var G_fakereading=0;
 
 var G_devices=[
-	{name:"Placeholder name",id:"01",key:"4242",currcommand:"",currcommandid:0,lastcommandrecieved:1,lastreading:0,tounpair:0}
+	//{name:"Placeholder name",id:"01",key:"4242",currcommand:"",currcommandid:0,lastcommandrecieved:1,lastreading:0,tounpair:0}
 ];
 var G_lastcommandid=1000;
 

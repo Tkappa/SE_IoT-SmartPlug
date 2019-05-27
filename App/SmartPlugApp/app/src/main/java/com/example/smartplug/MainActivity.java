@@ -1,38 +1,30 @@
 package com.example.smartplug;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.app.Activity;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -40,13 +32,35 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
 
+
+public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter btAdapter;
     private final int ENABLE_BT_REQ = 1;
     private Set<BluetoothDevice> nbDevices = new HashSet<>() ;
-    private BluetoothSocket conn;
+
+    BluetoothService mBoundService;
+    boolean mServiceBound = false;
+    LinearLayout ll ;
+
+    //Used to bind the service to this Activity
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServiceBound = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BluetoothService.BtBinder myBinder = (BluetoothService.BtBinder) service;
+            mBoundService = myBinder.getService();
+            mServiceBound = true;
+        }
+    };
+
+    //Used to find the devices
     private final BroadcastReceiver br = new BroadcastReceiver () {
         @Override
         public void onReceive (Context context , Intent intent ){
@@ -55,15 +69,56 @@ public class MainActivity extends AppCompatActivity {
             TextView text = findViewById(R.id.test);
 
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //discovery starts, we can show progress dialog or perform other tasks
-                text.setText("Starting");
+                text.setText("Discovering devices...");
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                text.append("-Finished");
+                text.setText("Finished discovering devices");
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //Creates dinamic buttons, one for each device with a name found
                 if (device != null){
-                    nbDevices.add((BluetoothDevice)device);
-                    text.append("-"+device.getName());
+                    if(device.getName()!=null) {
+                        nbDevices.add((BluetoothDevice) device);
+                        Button btn = new Button(getBaseContext());
+                        btn.setId(nbDevices.size());
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+                        final int id_ = btn.getId();
+
+                        //Creates a button and sets its behaviour on click
+                        btn.setText(device.getName());
+                        ll.addView(btn, params);
+                        Button btn1 = findViewById(id_);
+                        btn1.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View view) {
+                                Iterator<BluetoothDevice> it = nbDevices.iterator();
+                                BluetoothDevice toConnect=null;
+                                //Finds the desired device in the list
+                                while (it.hasNext()){
+                                    BluetoothDevice b = it.next();
+                                    String name= b.getName();
+                                    if(name != null && name.contains(((Button) view).getText())) {
+                                        toConnect=b;
+                                    }
+                                }
+                                //If the button pressed has a valid devices tries to pair with it
+                                if(toConnect!=null){
+                                    try {
+                                        mBoundService.setupSocket(toConnect.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")));
+                                        btAdapter.cancelDiscovery();
+                                        if(mBoundService.connect()){
+                                            unbindService(mServiceConnection);
+                                            Intent intent = new Intent(getBaseContext(), DeviceInteraction.class);
+                                            startActivity(intent);
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    //text.append("-"+);
                 }
             }
         }
@@ -76,272 +131,49 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         nbDevices.clear();
+        ll= findViewById(R.id.layout);
 
 
-        /*FloatingActionButton web = findViewById(R.id.web);
+        //Binds the activity with the service
+        Intent serviceIntent = new Intent(this, BluetoothService.class);
+        startService(serviceIntent);
+        bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
-        final RequestQueue queue = Volley.newRequestQueue(this);
-        final String url ="http://192.168.1.62:8000/";
-
-        web.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                final TextView text = findViewById(R.id.test);
-                text.append("hahahahahah");
-                // Instantiate the RequestQueue.
-                // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
-                                text.setText("Response is: "+ response);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        text.setText("That didn't work!");
-                    }
-                });
-
-// Add the request to the RequestQueue.
-                queue.add(stringRequest);
-            }
-        });
-*/
-        Button  list = findViewById(R.id.list);
+        //Sets the list button behaviour
+        Button list = findViewById(R.id.list);
         list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Cleans all old buttons
+                if(ll.getChildCount() > 0)
+                    ll.removeAllViews();
+                //Gets the required permissions
+                getperm();
                 TextView text = findViewById(R.id.test);
-                text.append("Finding...");
+                text.setText("Finding...");
+                //Starts the discovery
                 btAdapter.startDiscovery();
             }
         });
-        Button pair = findViewById(R.id.pair);
-        pair.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                TextView text = findViewById(R.id.test);
-                text.setText("Heybby-");
-
-                Iterator<BluetoothDevice> it = nbDevices.iterator();
-                BluetoothDevice toConnect=null;
-                while (it.hasNext()){
-                    BluetoothDevice b = it.next();
-                    String name= b.getName();
-                    if(name != null && name.contains("DSD")) {
-                        text.append("yeahce");
-                        toConnect=b;
-                    }
-                }
-                if(toConnect!=null){
-                    try {
-                        conn = toConnect.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                        btAdapter.cancelDiscovery();
-                        conn.connect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //btAdapter.startDiscovery();
-            }
-        });
-
-        Button perm = findViewById(R.id.perm);
-        perm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                getperm();
-            }
-        });
-        Button wifi = findViewById(R.id.wifi);
-        wifi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+WS=Almawifi per poveri;SanVitale45;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button watt = findViewById(R.id.watt);
-        watt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+DSW=100;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button routine = findViewById(R.id.routine);
-        routine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+DSR=0000111011010100;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button devon = findViewById(R.id.devon);
-        devon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+MM=1;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button devoff = findViewById(R.id.devoff);
-        devoff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+MM=0;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button faston = findViewById(R.id.faston);
-        faston.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+MF=1;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button fastoff = findViewById(R.id.fastoff);
-        fastoff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi");
-                        conn.getOutputStream().write("BT+MF=0;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Button server = findViewById(R.id.server);
-        server.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Premuto bt", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
-                    TextView text = findViewById(R.id.test);
-                    if(conn.isConnected()){
-                        text.setText("yeboi"); //http://192.168.1.62:8000/
-                        conn.getOutputStream().write("BT+SS=192.168.1.62;8000;01;4242;-".getBytes());
-                    }
-                    else{
-                        text.setText("noboi");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if( btAdapter == null ){
-            Log.e(" MyApp ","BT is not available on this device ");
-            finish () ;
+            TextView text = findViewById(R.id.test);
+            text.setText("BT is not available on this device");
+            list.setEnabled(false);
         }
         if (! btAdapter . isEnabled () ){
             startActivityForResult (
                     new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE),ENABLE_BT_REQ );
         }
-        IntentFilter filter = new IntentFilter();
 
+        //Registers the BT actions
+        IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
         registerReceiver(br, filter);
-        //registerReceiver( , new IntentFilter(BluetoothDevice.ACTION_FOUND));
     }
 
     @Override
@@ -358,8 +190,11 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //Opens the setting menu if clicked
         if (id == R.id.action_settings) {
+            unbindService(mServiceConnection);
+            Intent intent = new Intent(this, ServerSettings.class);
+            startActivity(intent);
             return true;
         }
 
@@ -368,12 +203,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult (int reqID , int res , Intent data ){
         if( reqID == ENABLE_BT_REQ && res == Activity.RESULT_OK ){
-            Snackbar.make(findViewById(android.R.id.content),"Attivato", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            //Activated BT
         }
         if( reqID == ENABLE_BT_REQ && res == Activity.RESULT_CANCELED ){
-            Snackbar.make(findViewById(android.R.id.content), "Non attivato", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            //Didnt activate BT
         }
     }
     @Override
@@ -383,9 +216,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getperm(){
-
-        TextView text = findViewById(R.id.test);
-        text.setText("Pressed button");
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -394,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
-                // Not to annoy user.
                 Toast.makeText(this, "Permission must be granted to use the app.", Toast.LENGTH_SHORT).show();
             } else {
 
@@ -405,8 +234,6 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             // Permission has already been granted.
-            Toast.makeText(this, "Permission already granted.", Toast.LENGTH_SHORT).show();
-
         }
     }
 

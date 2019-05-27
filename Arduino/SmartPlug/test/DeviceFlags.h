@@ -41,6 +41,10 @@ public:
   void setMasterOnOff(bool in);
   int getMasterOnOff();
 
+  bool getFastModeStatus();
+  void setFastModeStatus(bool in);
+
+
 
   LEDMODE getWifiLedCommand();
   LEDMODE getDevLedCommand();
@@ -68,6 +72,7 @@ private:
   bool BTBtnRequest;
   bool BTReady;
   bool BTOn;
+  bool FastModeStatus;
   LEDMODE BTLedCommand;
   LEDMODE WifiLedCommand;
   LEDMODE DevLedCommand;

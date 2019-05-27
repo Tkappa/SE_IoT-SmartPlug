@@ -13,6 +13,8 @@ Flags * Flags::getInstance(){
 Flags::Flags(){
   BTBtnRequest=false;
   BTReady=false;
+  FastModeStatus=false;
+  
   BTLedCommand=off;
   WifiLedCommand=off;
   DevLedCommand=off;
@@ -125,4 +127,11 @@ void Flags::setDeviceReady(bool in){
 }
 bool Flags::getDeviceReady(){
   return DeviceReady;
+}
+
+bool Flags::getFastModeStatus(){
+  return FastModeStatus;
+}
+void Flags::setFastModeStatus(bool in){
+  FastModeStatus=in;
 }

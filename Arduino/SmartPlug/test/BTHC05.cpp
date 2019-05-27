@@ -58,6 +58,8 @@ bool BTHC05::setup(){
         #endif
         if(currToFind->search(c)){//btChannel->read())){
           btChannel->flush();
+          //Turn of AT mode so we can send messages to the device once paired
+          digitalWrite(atPin,LOW);
           return true;
         }
       }
@@ -99,6 +101,7 @@ parser->addCommand("TM=");//<time>;- 6
 */
 
 bool BTHC05::handleMessages(){
+  char smallBuffer[10];
   while(btChannel->available()){
     char c= btChannel->read();
     int commandparsed=parser->parse(c);
@@ -124,7 +127,12 @@ bool BTHC05::handleMessages(){
           }
         break;
         case 4://"MF=");//<fastmode>;-4
-          //Toimplement
+          if(parser->getParam(0)[0]=='1'){
+            Flags::getInstance()->setFastModeStatus(true);
+          }
+          else{
+            Flags::getInstance()->setFastModeStatus(false);
+          }
         break;
         case 5://SS=");//<serverip>;<serverport>;<DevID>;<DevKey>5
           Settings::getInstance()->setServerIp(parser->getParam(0));
@@ -140,6 +148,14 @@ bool BTHC05::handleMessages(){
       }
       parser->reset();
     }
+
+  }
+  if(Flags::getInstance()->getFastModeStatus()){
+    dtostrf(Flags::getInstance()->getValueRead(),6,2,smallBuffer);
+    btChannel->write(smallBuffer);
+    strcat(smallBuffer,";");
+    Serial.print("sent : ");
+    Serial.println(smallBuffer);
   }
 }
 
