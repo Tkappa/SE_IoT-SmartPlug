@@ -13,7 +13,6 @@ void BluetoothInit::tick(){
   switch (state) {
     case BTI_checkBtn:
       //If the button was pressed and the BT device isn't ready yet it means that it needs to initialize
-      Serial.println(Flags::getInstance()->getBTBtnRequest());
       if(!Flags::getInstance()->getBTReady()&&Flags::getInstance()->getBTBtnRequest()){
         //In case it was posting remove the flag
         Flags::getInstance()->setIsPosting(false);

@@ -37,7 +37,6 @@ WifiESP8266::WifiESP8266(int tx,int rx){
 int WifiESP8266::setup(){
   bool check= false;
   char connString[140];
-  Serial.println(setupStatus);
 
   switch (setupStatus) {
     case ESP_getSettings:

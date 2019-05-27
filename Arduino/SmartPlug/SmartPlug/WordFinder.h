@@ -1,7 +1,7 @@
 #ifndef __WORDFINDER__
 #define __WORDFINDER__
 
-#define WPDEBUG
+//#define WPDEBUG
 
 #include "Arduino.h"
 

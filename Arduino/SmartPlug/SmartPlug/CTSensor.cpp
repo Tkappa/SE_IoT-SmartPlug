@@ -16,8 +16,10 @@ void CTSensor::calculateweight(){
     if(ticks++>=CTWEIGHTTICKS){
       ticks=0;
       currweight+=0.01;
+      #ifdef CTDEBUG
       Serial.print("Adding weight: ");
       Serial.println(currweight);
+      #endif
     }
   }
 }

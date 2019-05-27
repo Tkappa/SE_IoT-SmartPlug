@@ -215,7 +215,7 @@ app.get('/settings',function(req,res){
 	currentreading= currentreading +parseInt(G_fakereading);
 	res.json({settings:{
 		reading : currentreading,
-		G_fakereading: G_fakereading,
+		fakereading: G_fakereading,
 		maxhouse : G_maxhousewattage,
 		deviceinfo : deviceinfo
 	}
