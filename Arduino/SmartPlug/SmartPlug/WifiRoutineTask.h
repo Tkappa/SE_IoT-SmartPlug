@@ -3,6 +3,9 @@
 
 #define MAXTRIES 30
 
+//Debug messages
+//#define WFROUTDEBUGVERBOSE
+
 #include "Arduino.h"
 #include "Task.h"
 #include "WifiDevice.h"
