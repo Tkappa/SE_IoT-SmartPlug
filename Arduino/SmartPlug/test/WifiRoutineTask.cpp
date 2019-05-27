@@ -29,7 +29,7 @@ void WifiRoutine::tick(){
       }
       else if(statusMsg==-1){
         Serial.println(F("Error!:("));
-        if(errorTollerance++>=3){
+        if(errorTollerance++>=5){
           Flags::getInstance()->setWFhasSettings(false);
           Serial.println(F("Basta ora mi sono annoiato"));
           Flags::getInstance()->setWifiLedCommand(off);
@@ -49,11 +49,14 @@ void WifiRoutine::tick(){
       }
     break;
     case WFR_getCommand:
+      Flags::getInstance()->setIsPosting(true);
       if(currentDevice->getCommands()){
+        Flags::getInstance()->setIsPosting(false);
         state=WFR_pingServer;
       }
       break;
     case WFR_pingServer:
+
       if(currentDevice->pingBack()){
         state=WFR_postData;
       }

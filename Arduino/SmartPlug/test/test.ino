@@ -88,13 +88,14 @@ timer.setupPeriod(basePeriod);
  powRout.init(1000);
 
  uxRout.init(50);
- devRout.init(50);
+ devRout.init(200);
 
  Serial.println(freeRam());
 
 }
 void loop(){
   timer.waitForNextTick();
+  //Serial.print("Time:");
   //Serial.println(millis()-lastmillis);
   lastmillis=millis();
   if(devRout.updateAndCheckTime(basePeriod)){

@@ -14,7 +14,7 @@ Flags::Flags(){
   BTBtnRequest=false;
   BTReady=false;
   FastModeStatus=false;
-  
+
   BTLedCommand=off;
   WifiLedCommand=off;
   DevLedCommand=off;
@@ -134,4 +134,11 @@ bool Flags::getFastModeStatus(){
 }
 void Flags::setFastModeStatus(bool in){
   FastModeStatus=in;
+}
+
+void Flags::setIsPosting(bool in){
+  isPosting=in;
+}
+bool Flags::getIsPosting(){
+  return isPosting;
 }

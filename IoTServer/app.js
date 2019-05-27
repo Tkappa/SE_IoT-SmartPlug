@@ -98,7 +98,7 @@ app.get('/cmd',function(req,res){
 	  return (element.id == devid) && (element.key == devkey) ;
 	});
 	if(currentdevice==undefined){
-		res.sendStatus(404);
+		res.send("SP+SUN=1000;-");
 		return;
 	}
 	//If this is the unpair command delete the device from the list
@@ -190,7 +190,7 @@ app.post('/postsett',function(req,res){
 	var wattage=req.body.wattage;
 	var command=req.body.command;
 	switch(command){
-		case "setG_fakereading":
+		case "setfakereading":
 		G_fakereading=wattage;
 		break;
 		case "setmaxwatt":

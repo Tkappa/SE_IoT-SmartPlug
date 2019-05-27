@@ -10,13 +10,13 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
-#define ESPDEBUGPRINTRESPONSES
-#define ESPDEBUGPRINTCOMMANDS
-#define ESPDEBUGVERBOSE
+//#define ESPDEBUGPRINTRESPONSES
+//#define ESPDEBUGPRINTCOMMANDS
+//#define ESPDEBUGVERBOSE
 
 
-#define WIFITIMEOUT 5
-#define CONNECTTRIES 15
+#define WIFITIMEOUT 10
+#define CONNECTTRIES 30
 #define BUFFERSIZE 10
 
 enum ESPsetup {ESP_getSettings,ESP_checkconn,ESP_disconnect,ESP_connect,ESP_skipTick,ESP_readResponse};

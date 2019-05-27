@@ -1,19 +1,32 @@
 #include "EmonLib.h"
+#include "CTSensor.h"
 // Include Emon Library
 EnergyMonitor emon1;
 // Create an instance
 
+bool statusS= false;
+CTSensor ct(1);
+
 void setup()
 {
   Serial.begin(9600);
-
-  emon1.current(1, 111.1);             // Current: input pin, calibration.
+  ct.begin();
+  //emon1.current(1, 60.9);             // Current: input pin, calibration.
 }
 
 void loop()
 {
-  double Irms = emon1.calcIrms(1480);  // Calculate Irms only
+  if(!statusS){
+    
+    if(ct.weigth()){
+      statusS=true;
+    }
+  }
+  else{
+    ct.read();
+  }
+  /*double Irms = emon1.calcIrms(2000);  // Calculate Irms only
   Serial.print((Irms*230.0));           // Apparent power
   Serial.print(" ");
-  Serial.println(Irms);             // Irms
+  Serial.println(Irms);             // Irms*/
 }

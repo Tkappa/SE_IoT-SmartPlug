@@ -45,6 +45,9 @@ public:
   void setFastModeStatus(bool in);
 
 
+  void setIsPosting(bool in);
+
+  bool getIsPosting();
 
   LEDMODE getWifiLedCommand();
   LEDMODE getDevLedCommand();
@@ -73,6 +76,7 @@ private:
   bool BTReady;
   bool BTOn;
   bool FastModeStatus;
+  bool isPosting;
   LEDMODE BTLedCommand;
   LEDMODE WifiLedCommand;
   LEDMODE DevLedCommand;
