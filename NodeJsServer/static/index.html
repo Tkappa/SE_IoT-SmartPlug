@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./css/clockpicker.css">
+    <link rel="stylesheet" href="./css/standalone.css">
+
+    <title>Smart plug</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Smart plug web app</h1>
+        <p>Your house is currently using <span id="currTotWatt"></span> Watts!</p>
+      </div>
+      <div id="nodevs">
+        <p class="text-center"> No devices currently paired! Try pairing one with the App</p>
+      </div>
+      <div class="card" id="dev01" style="display:none;">
+          <div class="card-header" id="headingOne">
+            <h2 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <span id="dev01name">Dev1</span>
+              </button>
+            </h2>
+          </div>
+
+          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#dev01">
+            <div class="card-body container">
+              <div class="row">
+                <div class="col">
+                  <p id="dev01cmdstatus" class="text-center">No command sent </p>
+              </div>
+              <div class=col>
+                <a href="/reading?id=01" class="btn btn-primary">Go to readings</a>
+              </div>
+              </div>
+              <div class="row">
+                <div class="col-3">
+                  <form action="/postc" method="post">
+                    <input type="text" value="01" name="id" hidden>
+                    <input type="text" value="turnoff" name="command" hidden>
+                    <input type="submit" value="Turn off device" class="btn btn-primary">
+                  </form>
+                </div>
+              <div class="col-3">
+                <form action="/postc" method="post">
+                  <input type="text" value="01" name="id" hidden>
+                  <input type="text" value="turnon" name="command" hidden>
+                  <input type="submit" value="Turn on device" class="btn btn-primary">
+                </form>
+              </div>
+              <div class="col-6">
+                <form action="/postc" method="post">
+                  <input type="text" value="01" name="id" hidden>
+                  <input type="text" value="setwattage" name="command" hidden>
+                  <input type="number" name="wattage">
+                  <input type="submit" value="Set Max Wattage" class="btn btn-primary">
+                </form>
+              </div>
+            </div>
+          <div class="row">
+          <div class="col-3">
+
+          <form action="/postc" method="post">
+            <input type="text" value="01" name="id" hidden>
+            <input type="text" value="unpair" name="command" hidden>
+            <input type="submit" value="Unpair" class="btn btn-primary">
+          </form>
+        </div>
+        <div class="col-9">
+          <form action="/postc" method="post">
+            <input type="text" value="01" name="id" hidden>
+            <input type="text" value="setname" name="command" hidden>
+            <input type="test" name="name">
+            <input type="submit" value="Set Device Name" class="btn btn-primary">
+          </form>
+        </div>
+        </div>
+      </div>
+          </div>
+      </div>
+      <div class="card" id="accordionSettings">
+          <div class="card-header" id="headingTwo">
+            <h2 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                House settings
+              </button>
+            </h2>
+          </div>
+
+          <div id="collapseTwo" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSettings">
+            <div class="card-body container">
+              <div class="row">
+                <div class="col">
+                  <form action="/postsett" method="post">
+                    <input type="number" name="wattage" id="maxhousewattval">
+                    <input type="text" value="setmaxwatt" name="command" hidden>
+                    <input type="submit" value="Set max house wattage" class="btn btn-primary">
+                  </form>
+                </div>
+                <div class="col">
+                  <form action="/postsett" method="post">
+                    <input type="number" name="wattage" id="fakereadval">
+                    <input type="text" value="setfakereading" name="command" hidden>
+                    <input type="submit" value="Set amount of fake wattage" class="btn btn-primary">
+                  </form>
+                </div>
+
+              </div>
+          </div>
+      </div>
+    </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="./js/jquery-3.4.1.js"></script>
+    <script src="./js/popper.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/clockpicker.js"></script>
+    <script>
+    $('.clockpicker').clockpicker();
+    $(document).ready(function(){
+      $.get( "/settings", function( data ) {
+      var settings= data.settings;
+      $("#fakereadval").val(settings.fakereading);
+      $("#maxhousewattval").val(settings.maxhouse);
+      $("#currTotWatt").text(settings.reading);
+      var devices = settings.deviceinfo;
+      if(devices.length>0){
+        $("#nodevs").hide();
+      }
+      devices.forEach(function(element) {
+        $("#dev"+element.id).show();
+        if(element.commrecv==1){
+          $("#dev"+element.id+"cmdstatus").text("Last command was correctly recieved!");
+        }
+        else{
+          $("#dev"+element.id+"cmdstatus").text("Last command has not been recieved yet!");
+        }
+        $("#dev"+element.id+"name").text(element.name);
+      });
+      });
+    });
+    </script>
+
+  </body>
+</html>
